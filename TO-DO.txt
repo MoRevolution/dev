@@ -1,0 +1,11 @@
+dev 
+- add zoxide 
+
+for personal
+- add gimp
+- add discord app 
+- add slack 
+- add teams
+- quick share by google 
+- add syncthing
+
