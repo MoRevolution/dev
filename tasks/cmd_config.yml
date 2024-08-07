@@ -1,0 +1,26 @@
+---
+- name: Install clink if not installed already.
+  ansible.windows.win_powershell:
+    script: |
+      $app = "clink"
+      if ($(winget list $app) -like "*No installed package found*") {
+        winget install --accept-package-agreements --accept-source-agreements -h -s "winget" $app
+      }
+      else {
+        winget upgrade $app
+      }
+
+- name: Configure oh-my-posh in clink
+  ansible.windows.win_powershell: |
+    cd  C:\Users\$((whoami).Split("\")[1])\clink
+    wget "https://raw.githubusercontent.com/shunsambongi/clink-zoxide/master/zoxide.lua" -OutFile zoxide.lua
+
+# add the zsh-ish.omp.json to this 
+  ansible.windows.win_shell:  |
+    cd C:\Users\%USERNAME%\clink\
+    touch oh-my-posh.lua
+    echo load(io.popen('oh-my-posh init cmd'):read("*a"))() > oh-my-posh.lua
+  args:
+    executable: cmd.exe
+
+    

@@ -1,0 +1,35 @@
+---
+- name: Enable Windows Subsystem for Linux.
+  ansible.windows.win_optional_feature:
+    name:
+      - Microsoft-Windows-Subsystem-Linux
+      - VirtualMachinePlatform
+    state: present
+  register: wsl_status
+
+- name: Restart the machine to complete the WSL install.
+  ansible.windows.win_reboot:
+  when: wsl_status.reboot_required
+
+- name: Install Linux kernel update package via the Chocolatey.
+  chocolatey.chocolatey.win_chocolatey:
+    name: wsl2
+    ignore_checksums: true
+    state: present
+
+# - name: Install WSL2 distribution.
+#   chocolatey.chocolatey.win_chocolatey:
+#     name: "{{ wsl2_distribution }}"
+#     ignore_checksums: true
+#     state: present
+
+- name: Install wsl-ubuntu-2004 from wsl online 
+  ansible.windows.win_powershell:
+    script:
+      wsl --install -d Ubuntu-24.04
+
+- name: Install all wsl packages
+  ansible.windows.win_powershell:
+    script: | 
+      wsl apt install -y "{{ item.name | default(item) }}"
+  loop: "{{ wsl_packages }}"
