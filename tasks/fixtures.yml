@@ -1,0 +1,44 @@
+    - name: Copy zsh-ish.omp.json theme to user directory
+      ansible.windows.win_copy:
+        src: "{{ playbook_dir }}/files/zsh-ish.omp.json"
+        dest: "C:\\Users\\{{ ansible_user }}\\zsh-ish.omp.json"
+
+    - name: Copy wallpaper to user Pictures directory
+      ansible.windows.win_copy:
+        src: "{{ playbook_dir }}/files/Wallpaper.jpg"
+        dest: "C:\\Users\\{{ ansible_user }}\\Pictures\\Wallpaper.jpg"
+
+    - name: Copy lockscreen image to user Pictures directory
+      ansible.windows.win_copy:
+        src: "{{ playbook_dir }}/files/Lockscreen.jpg"
+        dest: "C:\\Users\\{{ ansible_user }}\\Pictures\\Lockscreen.jpg"
+
+    - name: Set desktop wallpaper
+      ansible.windows.win_powershell:
+        script: |
+          $wallpaperPath = "C:\Users\{{ ansible_user }}\Pictures\Wallpaper.jpg"
+          Add-Type -TypeDefinition @"
+          using System;
+          using System.Runtime.InteropServices;
+          public class Wallpaper {
+              [DllImport("user32.dll", CharSet = CharSet.Auto)]
+              public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
+          }
+          "@
+          [Wallpaper]::SystemParametersInfo(20, 0, $wallpaperPath, 3)
+
+    - name: Set lockscreen wallpaper via registry
+      ansible.windows.win_regedit:
+        path: HKCU:\Software\Microsoft\Windows\CurrentVersion\PersonalizationCSP
+        name: LockScreenImagePath
+        data: "C:\\Users\\{{ ansible_user }}\\Pictures\\Lockscreen.jpg"
+        type: string
+
+    - name: Set lockscreen wallpaper status via registry
+      ansible.windows.win_regedit:
+        path: HKCU:\Software\Microsoft\Windows\CurrentVersion\PersonalizationCSP
+        name: LockScreenImageStatus
+        data: 1
+        type: dword
+
+    - name: Copy zoxide.lua to clink directory

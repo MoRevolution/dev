@@ -11,16 +11,23 @@
       }
 
 - name: Configure oh-my-posh in clink
-  ansible.windows.win_powershell: |
-    cd  C:\Users\$((whoami).Split("\")[1])\clink
-    wget "https://raw.githubusercontent.com/shunsambongi/clink-zoxide/master/zoxide.lua" -OutFile zoxide.lua
+  vars:
+    username: "{{ ansible_user }}"
+  block:
+    - name: Copy zoxide.lua to clink directory
+      ansible.windows.win_powershell:
+        script: |
+          $clinkDir = "C:\Users\$((whoami).Split('\')[1])\clink"
+          if (!(Test-Path $clinkDir)) {
+            New-Item -ItemType Directory -Path $clinkDir -Force
+          }
+          Copy-Item -Path "{{ playbook_dir }}\files\zoxide.lua" -Destination "$clinkDir\zoxide.lua" -Force
 
-# add the zsh-ish.omp.json to this 
-  ansible.windows.win_shell:  |
-    cd C:\Users\%USERNAME%\clink\
-    touch oh-my-posh.lua
-    echo load(io.popen('oh-my-posh init cmd'):read("*a"))() > oh-my-posh.lua
-  args:
-    executable: cmd.exe
+    - name: Configure oh-my-posh with custom theme in clink
+      ansible.windows.win_shell: |
+        cd C:\Users\%USERNAME%\clink\
+        echo load(io.popen('oh-my-posh init cmd --config C:\Users\%USERNAME%\zsh-ish.omp.json'):read("*a"))() > oh-my-posh.lua
+      args:
+        executable: cmd.exe
 
     

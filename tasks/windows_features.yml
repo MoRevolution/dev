@@ -1,4 +1,14 @@
 ---
+- name: Check Windows edition
+  ansible.windows.win_command: systeminfo | findstr /B /C:"OS Name"
+  register: windows_edition
+  changed_when: false
+
+- name: Run hyperv.bat script
+  ansible.builtin.win_command:
+    cmd: "{{ playbook_dir | dirname | dirname }}\\files\\hyperv.bat"
+  when: "'Home' in windows_edition.stdout"
+
 - name: Enable Windows optional features.
   ansible.windows.win_optional_feature:
     name: "{{ windows_feature.key }}"
