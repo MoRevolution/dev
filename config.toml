@@ -32,6 +32,7 @@ sevenzip = "7zip.7zip"
 oh_my_posh = "JanDeDobbeleer.OhMyPosh"
 clink = "chrisant996.Clink"
 chocolatey = "Chocolatey.Choco"
+autohotkey = "AutoHotkey.AutoHotkey"
 
 # WSL/Ubuntu-specific 
 [packages.wsl_only]
@@ -54,6 +55,7 @@ unzip = "unzip"
 "files/Lockscreen.jpg" = "~/Pictures/"
 "files/zoxide.lua" = "~/AppData/Local/clink/clink/zoxide.lua"
 "files/oh-my-posh.lua" = "~/AppData/Local/clink/clink/oh-my-posh.lua"
+"files/Media Keys.ahk" = "~/Documents/AutoHotkey/"
 
 # TODO: try to see if this can be done??
 [system_config.windows]

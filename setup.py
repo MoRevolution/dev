@@ -111,13 +111,21 @@ def install_package(package_name, package_id, platform, installed_list=None, arg
     if installed_list and is_package_installed(package_id, installed_list, platform):
         console.print(f"[yellow]SKIP[/yellow] {package_name} - already installed")
         return True
-    
-    console.print(f"[blue]INSTALLING[/blue] {package_name} ({package_id})")
-    
-    if platform == "windows":
-        cmd = f"winget install {package_id} --accept-source-agreements --accept-package-agreements --silent"
+
+    if platform in ["windows", "wsl"]:
+        if platform == "windows":
+            cmd = f"winget install {package_id} --accept-source-agreements --accept-package-agreements --silent"
+        elif platform == "wsl":
+            # Update package list on first run
+            if not hasattr(install_package, "_apt_updated"):
+                console.print("[blue]INFO[/blue] Updating package list (first run)")
+                run_cmd("sudo apt update")
+                install_package._apt_updated = True
+            cmd = f"sudo apt install -y {package_id}"
+
         if arguments:
             cmd += f" {arguments}"
+
         with console.status(f"Installing {package_name}...") as status:
             success, stdout, stderr = run_cmd(cmd)
         if success:
@@ -125,25 +133,7 @@ def install_package(package_name, package_id, platform, installed_list=None, arg
         else:
             console.print(f"[red]FAILED[/red] {package_name}: {stderr.strip()[:60]}")
         return success
-    
-    elif platform == "wsl":
-        # First update package list if it's the first install
-        if not hasattr(install_package, "_apt_updated"):
-            console.print("[blue]INFO[/blue] Updating package list (first run)")
-            run_cmd("sudo apt update")
-            install_package._apt_updated = True
-        
-        cmd = f"sudo apt install -y {package_id}"
-        if arguments:
-            cmd += f" {arguments}"
-        with console.status(f"Installing {package_name}...") as status:
-            success, stdout, stderr = run_cmd(cmd)
-        if success:
-            console.print(f"[green]SUCCESS[/green] {package_name} installed")
-        else:
-            console.print(f"[red]FAILED[/red] {package_name}: {stderr.strip()[:60]}")
-        return success
-    
+
     console.print(f"[red]ERROR[/red] Unknown platform for {package_name}")
     return False
 
@@ -194,6 +184,7 @@ def install_packages():
     if platform == "windows":
         gui_packages = config.get("packages", {}).get("gui_only", {})
         if gui_packages:
+            print()
             log_info(f"Processing {len(gui_packages)} GUI packages")
             for name, pkg_info in gui_packages.items():
                 if isinstance(pkg_info, dict):
@@ -214,7 +205,8 @@ def install_packages():
     platform_key = f"{platform}_only"
     platform_packages = config.get("packages", {}).get(platform_key, {})
     if platform_packages:
-        log_info(f"Processing {len(platform_packages)} {platform}-specific packages")
+        print()
+        log_info(f"Installing {len(platform_packages)} {platform}-specific packages")
         for name, pkg_info in platform_packages.items():
             if isinstance(pkg_info, dict):
                 package_id = pkg_info.get(platform, pkg_info.get("id"))
