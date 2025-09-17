@@ -1,0 +1,65 @@
+[meta]
+version = "<idk 🤷‍♂️>"
+description = "Dev Setup Config"
+
+## Common packages (should be both on wsl and windows)
+[packages.common]
+git = { windows = "Git.Git", wsl = "git", arguments = "--custom '/components=\"gitlfs,assoc,autoupdate,windowsterminal\" /TASKS=\"!desktopicon,gitbashprofile\" /DEFAULTBRANCH=main /USEGITOPTIONALTOOLS=true'" }
+miniconda = { windows = "Anaconda.Miniconda3", wsl = "miniconda3" }
+jq = { windows = "jqlang.jq", wsl = "jq" }
+gh = { windows = "GitHub.cli", wsl = "gh" }
+fnm = { windows = "Schniz.fnm", wsl = "fnm" }
+fzf = { windows = "junegunn.fzf", wsl = "fzf" }
+fd = { windows = "sharkdp.fd", wsl = "fd-find" }
+zoxide = { windows = "ajeetdsouza.zoxide", wsl = "zoxide" }
+ripgrep = { windows = "BurntSushi.ripgrep.MSVC", wsl = "ripgrep" }
+lazygit = { windows = "JesseDuffield.Lazygit", wsl = "lazygit" }
+lazydocker = { windows = "JesseDuffield.Lazydocker", wsl = "lazydocker" }
+
+vscode = { windows = "Microsoft.VisualStudioCode", wsl = "code" }
+# docker = { windows = "Docker.DockerDesktop", wsl = "docker.io" }
+
+# GUI-only packages (automatically skipped in WSL)
+[packages.gui_only]
+windows_terminal = "Microsoft.WindowsTerminal"
+powertoys = "Microsoft.PowerToys"
+flow_launcher = "Flow-Launcher.Flow-Launcher"
+firefox = "Mozilla.Firefox"
+sevenzip = "7zip.7zip"
+
+# Windows-specific packages only
+[packages.windows_only]
+oh_my_posh = "JanDeDobbeleer.OhMyPosh"
+clink = "chrisant996.Clink"
+chocolatey = "Chocolatey.Choco"
+
+# WSL/Ubuntu-specific 
+[packages.wsl_only]
+build_essential = "build-essential"
+zsh = "zsh"
+tmux = "tmux"
+htop = "htop"
+tree = "tree"
+vim = "vim"
+neovim = "neovim"
+wget = "wget"
+unzip = "unzip"
+
+# Configuration files to copy
+# TODO: might be worth finding a way
+[files]
+"files/zsh-ish.omp.json" = "~/"
+"files/Microsoft.PowerShell_profile.ps1" = "~/Documents/PowerShell/"
+"files/Wallpaper.jpg" = "~/Pictures/"
+"files/Lockscreen.jpg" = "~/Pictures/"
+"files/zoxide.lua" = "~/AppData/Local/clink/clink/zoxide.lua"
+"files/oh-my-posh.lua" = "~/AppData/Local/clink/clink/oh-my-posh.lua"
+
+# TODO: try to see if this can be done??
+[system_config.windows]
+enable_wsl = true
+enable_hyper_v = false
+
+[system_config.wsl]
+# TODO: add oh my zsh config here (don't have one rn but will figure it out)
+default_shell = "zsh"
