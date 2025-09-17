@@ -1,4 +1,0 @@
-- [ ] add wallpaper and lockscreen and set them
-- [ ] Setup extension setup for Flow Launcher (dark mode, size of bar, and all that)
-- [ ] Add a personal profile task to install some apps only if the computer is a personal computer
-- [ ] Add task to login to all apps (browsers and dev tools included)
