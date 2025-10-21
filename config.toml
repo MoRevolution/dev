@@ -4,8 +4,10 @@ description = "Dev Setup Config"
 
 ## Common packages (should be both on wsl and windows)
 [packages.common]
+# TOdO : change wsl to use brew 
 git = { windows = "Git.Git", wsl = "git", arguments = "--custom '/components=\"gitlfs,assoc,autoupdate,windowsterminal\" /TASKS=\"!desktopicon,gitbashprofile\" /DEFAULTBRANCH=main /USEGITOPTIONALTOOLS=true'" }
 miniconda = { windows = "Anaconda.Miniconda3", wsl = "miniconda3" }
+uv = { windows = "astral-sh.uv", wsl = "uv" }
 jq = { windows = "jqlang.jq", wsl = "jq" }
 gh = { windows = "GitHub.cli", wsl = "gh" }
 fnm = { windows = "Schniz.fnm", wsl = "fnm" }

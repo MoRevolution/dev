@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import os
+import shutil
 import subprocess
 import sys
-import shutil
 import time
 from pathlib import Path
-from rich.console import Console
 
+from rich.console import Console
 
 # For Python 3.11+, use tomllib. For older versions, fall back to tomli
 try:
@@ -59,7 +59,7 @@ def log_skip(message):
 
 def is_wsl():
     try:
-        with open("/proc/version", "r") as f:
+        with open("/proc/version") as f:
             return "microsoft" in f.read().lower()
     except Exception:
         return False
@@ -102,16 +102,19 @@ def is_package_installed(package_id, installed_list, platform):
     return False
 
 
-def install_package(package_name, package_id, platform, installed_list=None, arguments=None):
+def install_package(
+        package_name, package_id, platform, installed_list=None, arguments=None
+        ) -> bool:
     """Install a package using manager that fits system"""
-    
+
     console = Console()
-    
+
     # Check if already installed first
     if installed_list and is_package_installed(package_id, installed_list, platform):
         console.print(f"[yellow]SKIP[/yellow] {package_name} - already installed")
         return True
 
+    cmd = None
     if platform in ["windows", "wsl"]:
         if platform == "windows":
             cmd = f"winget install {package_id} --accept-source-agreements --accept-package-agreements --silent"
@@ -123,7 +126,7 @@ def install_package(package_name, package_id, platform, installed_list=None, arg
                 install_package._apt_updated = True
             cmd = f"sudo apt install -y {package_id}"
 
-        if arguments:
+        if arguments and cmd:
             cmd += f" {arguments}"
 
         with console.status(f"Installing {package_name}...") as status:
