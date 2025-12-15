@@ -1,0 +1,40 @@
+[user]
+    # Set your name and email here
+    name = morevolution
+    email = 81017119+MoRevolution@users.noreply.github.com
+
+[init]
+    defaultBranch = main
+
+[core]
+    editor = vim
+    autocrlf = input
+    pager = bat --style=plain
+
+[advice]
+    addEmptyPathspec = false
+
+[alias]
+    l1 = log --oneline -7
+    lg = log --oneline --graph --decorate
+    s = status -sb
+    co = checkout
+    br = branch
+    cm = commit -m
+    ca = commit --amend
+    df = diff
+    dfs = diff --staged
+    # Fuzzy add: show diff preview and stage selected files
+    fd = "!f() { git diff --name-only && git ls-files --others --exclude-standard | fzf --multi --preview 'bat --color=always {} 2>/dev/null || cat {}' | xargs -r git add; }; f"
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+
+[diff]
+    colorMoved = default
+
+[merge]
+    conflictstyle = diff3
