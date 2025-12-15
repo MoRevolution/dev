@@ -6,3 +6,6 @@
 config.yml
 roles*
 hosts
+__pycache__/
+Archive/
+.stfolder
