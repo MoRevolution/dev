@@ -1,69 +1,85 @@
 [meta]
 version = "<idk 🤷‍♂️>"
-description = "Dev Setup Config"
+description = "Dev Environment Setup Config"
+# anything unix is both WSL and macOS
 
-## Common packages (should be both on wsl and windows)
+# Common packages (installed on all platforms)
 [packages.common]
-# TOdO : change wsl to use brew 
-git = { windows = "Git.Git", wsl = "git", arguments = "--custom '/components=\"gitlfs,assoc,autoupdate,windowsterminal\" /TASKS=\"!desktopicon,gitbashprofile\" /DEFAULTBRANCH=main /USEGITOPTIONALTOOLS=true'" }
-miniconda = { windows = "Anaconda.Miniconda3", wsl = "miniconda3" }
-uv = { windows = "astral-sh.uv", wsl = "uv" }
-jq = { windows = "jqlang.jq", wsl = "jq" }
-gh = { windows = "GitHub.cli", wsl = "gh" }
-fnm = { windows = "Schniz.fnm", wsl = "fnm" }
-fzf = { windows = "junegunn.fzf", wsl = "fzf" }
-fd = { windows = "sharkdp.fd", wsl = "fd-find" }
-zoxide = { windows = "ajeetdsouza.zoxide", wsl = "zoxide" }
-ripgrep = { windows = "BurntSushi.ripgrep.MSVC", wsl = "ripgrep" }
-lazygit = { windows = "JesseDuffield.Lazygit", wsl = "lazygit" }
-lazydocker = { windows = "JesseDuffield.Lazydocker", wsl = "lazydocker" }
+# Use "windows" for winget IDs, "brew" for Homebrew (WSL/macOS)
+git = { windows = "Git.Git", brew = "git", windows_args = "--custom '/components=\"gitlfs,assoc,autoupdate,windowsterminal\" /TASKS=\"!desktopicon,gitbashprofile\" /DEFAULTBRANCH=main /USEGITOPTIONALTOOLS=true'" }
+miniconda = { windows = "Anaconda.Miniconda3", brew = "miniconda" }
+uv = { windows = "astral-sh.uv", brew = "uv" }
+jq = { windows = "jqlang.jq", brew = "jq" }
+gh = { windows = "GitHub.cli", brew = "gh" }
+fnm = { windows = "Schniz.fnm", brew = "fnm" }
+fzf = { windows = "junegunn.fzf", brew = "fzf" }
+fd = { windows = "sharkdp.fd", brew = "fd" }
+zoxide = { windows = "ajeetdsouza.zoxide", brew = "zoxide" }
+ripgrep = { windows = "BurntSushi.ripgrep.MSVC", brew = "ripgrep" }
+lazygit = { windows = "JesseDuffield.Lazygit", brew = "lazygit" }
+lazydocker = { windows = "JesseDuffield.Lazydocker", brew = "lazydocker" }
+bat = { windows = "sharkdp.bat", brew = "bat" }
+vscode = { windows = "Microsoft.VisualStudioCode", brew = "visual-studio-code" }
 
-vscode = { windows = "Microsoft.VisualStudioCode", wsl = "code" }
-# docker = { windows = "Docker.DockerDesktop", wsl = "docker.io" }
-
-# GUI-only packages (automatically skipped in WSL)
+# GUI-only packages (Windows only)
 [packages.gui_only]
-windows_terminal = "Microsoft.WindowsTerminal"
-powertoys = "Microsoft.PowerToys"
-flow_launcher = "Flow-Launcher.Flow-Launcher"
-firefox = "Mozilla.Firefox"
-sevenzip = "7zip.7zip"
+windows_terminal = { windows = "Microsoft.WindowsTerminal" }
+powertoys = { windows = "Microsoft.PowerToys" }
+flow_launcher = { windows = "Flow-Launcher.Flow-Launcher" }
+firefox = { windows = "Mozilla.Firefox", brew = "firefox" }
+sevenzip = { windows = "7zip.7zip" }
 
-# Windows-specific packages only
+# Windows-specific packages
 [packages.windows_only]
-oh_my_posh = "JanDeDobbeleer.OhMyPosh"
-clink = "chrisant996.Clink"
-chocolatey = "Chocolatey.Choco"
-autohotkey = "AutoHotkey.AutoHotkey"
+oh_my_posh = { windows = "JanDeDobbeleer.OhMyPosh" }
+clink = { windows = "chrisant996.Clink" }
+chocolatey = { windows = "Chocolatey.Choco" }
+autohotkey = { windows = "AutoHotkey.AutoHotkey" }
 
-# WSL/Ubuntu-specific 
+# Unix packages (WSL and macOS)
+[packages.unix_only]
+zsh = { brew = "zsh" }
+tmux = { brew = "tmux" }
+htop = { brew = "htop" }
+tree = { brew = "tree" }
+vim = { brew = "vim" }
+neovim = { brew = "neovim" }
+wget = { brew = "wget" }
+
+# WSL-specific packages
 [packages.wsl_only]
-build_essential = "build-essential"
-zsh = "zsh"
-tmux = "tmux"
-htop = "htop"
-tree = "tree"
-vim = "vim"
-neovim = "neovim"
-wget = "wget"
-unzip = "unzip"
+build_essential = { brew = "gcc" }  # brew equivalent of build-essential
 
-# Configuration files to copy
-# TODO: might be worth finding a way
+# macOS-specific packages
+[packages.macos_only]
+# Add macOS-specific packages here
+
+# =============================================================================
+# Configuration files
+# Simple format: "source" = "destination" (same for all platforms)
+# Platform-specific: "source" = { windows = "dest", wsl = "dest", macos = "dest" }
+# Omit a platform to skip copying on that platform
+# =============================================================================
+
 [files]
-"files/zsh-ish.omp.json" = "~/"
-"files/Microsoft.PowerShell_profile.ps1" = "~/Documents/PowerShell/"
-"files/Wallpaper.jpg" = "~/Pictures/"
-"files/Lockscreen.jpg" = "~/Pictures/"
-"files/zoxide.lua" = "~/AppData/Local/clink/clink/zoxide.lua"
-"files/oh-my-posh.lua" = "~/AppData/Local/clink/clink/oh-my-posh.lua"
-"files/Media Keys.ahk" = "~/Documents/AutoHotkey/"
 
-# TODO: try to see if this can be done??
+# Cross-platform configs
+"files/.gitconfig" = "~/.gitconfig"
+"files/.zshrc" = { wsl = "~/.zshrc", macos = "~/.zshrc" }
+"files/zsh-ish.omp.json" = { windows = "~/", wsl = "~/.config/", macos = "~/.config/" }
+
+# Windows-only configs
+"files/Microsoft.PowerShell_profile.ps1" = { windows = "~/Documents/PowerShell/" }
+"files/Wallpaper.jpg" = { windows = "~/Pictures/" }
+"files/Lockscreen.jpg" = { windows = "~/Pictures/" }
+"files/zoxide.lua" = { windows = "~/AppData/Local/clink/" }
+"files/oh-my-posh.lua" = { windows = "~/AppData/Local/clink/" }
+"files/Media Keys.ahk" = { windows = "~/Documents/AutoHotkey/" }
+
+# TODO: try to see if this can be done?? but too much work ughh
 [system_config.windows]
 enable_wsl = true
 enable_hyper_v = false
 
 [system_config.wsl]
-# TODO: add oh my zsh config here (don't have one rn but will figure it out)
 default_shell = "zsh"
