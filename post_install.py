@@ -1,34 +1,36 @@
-import subprocess
-
-
-def run_command(command):
-    try:
-        print(f"Running: {command}")
-        result = subprocess.run(
-            command,
-            shell=True,
-            check=True,
-            text=True,
-            capture_output=True,
-        )
-        print(result.stdout)
-    except subprocess.CalledProcessError as e:
-        print(f"Error: {e.stderr}")
+#!/usr/bin/env python3
+"""Post-installation stuff - anything i can't do via a file copy"""
+from utils import Platform, run_cmd
 
 
 def main():
-    commands = [
-        r"clink autorun install --allusers",
-        r"clink set ohmyposh.theme ~\zsh-ish.omp.json",
-        r"fnm install --lts",
-        r"gh auth login",
-        r"git config --global alias.fd '!f() { git ls-files --others "
-        r"--exclude-standard | fzf --preview \"cat {}\"; }; f'",
-        r"git config --global alias.l1 'log --oneline -7'",
-    ]
+    platform = Platform.detect()
+    print(f"Platform: {platform.value}")
 
-    for command in commands:
-        run_command(command)
+    if platform == Platform.WINDOWS:
+        commands = [
+            ("clink autorun", "clink autorun install --allusers"),
+            ("clink theme", r"clink set ohmyposh.theme ~\zsh-ish.omp.json"),
+            ("fnm lts", "fnm install --lts"),
+            ("gh auth", "gh auth login"),
+        ]
+    else:
+        commands = [
+            ("fnm lts", "fnm install --lts"),
+            ("gh auth", "gh auth login"),
+            ("zsh default", "chsh -s $(which zsh)"),
+        ]
+
+    print("\nRunning post-install commands...")
+    for name, cmd in commands:
+        print(f"  {name}...", end=" ")
+        success, _, stderr = run_cmd(cmd)
+        if success:
+            print("OK")
+        else:
+            print(f"SKIP ({stderr[:30] if stderr else 'failed'})")
+
+    print("\nDone!")
 
 
 if __name__ == "__main__":
