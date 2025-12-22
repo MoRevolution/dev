@@ -1,0 +1,26 @@
+# Keep repo text files LF (works cross-platform)
+* text=auto eol=lf
+
+# Linux/WSL stuff must be LF
+*.sh  text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
+*.env text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.json text eol=lf
+*.ini text eol=lf
+*.conf text eol=lf
+
+# Windows-only scripts can be CRLF
+*.lua text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+files/zsh-ish.omp.json text eol=crlf
+files/Media Keys.ahk text eol=crlf
+
+# any zsh-related files must be LF
+*.zsh-theme text eol=lf
+*.zshrc    text eol=lf
