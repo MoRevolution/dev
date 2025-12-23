@@ -65,7 +65,9 @@ build_essential = { brew = "gcc" }  # brew equivalent of build-essential
 
 # Cross-platform configs
 "files/.gitconfig" = "~/.gitconfig"
+"files/.zshenv" = { wsl = "~/.zshenv", macos = "~/.zshenv" }
 "files/.zshrc" = { wsl = "~/.zshrc", macos = "~/.zshrc" }
+"files/.zimrc" = { wsl = "~/.zimrc", macos = "~/.zimrc" }
 "files/zsh-ish.omp.json" = { windows = "~/", wsl = "~/.config/", macos = "~/.config/" }
 
 # Windows-only configs
