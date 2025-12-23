@@ -165,3 +165,15 @@ if [[ -d "/home/linuxbrew/.linuxbrew" ]]; then
 elif [[ -d "/opt/homebrew" ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
+
+# Robbyrussell-style prompt (overrides Zim's asciiship)
+# Arrow is green on success, red on failure. Shows git branch if in repo.
+_git_prompt_info() {
+  local branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+  [[ -n "$branch" ]] || return
+  local dirty=""
+  [[ -n $(git status --porcelain 2>/dev/null) ]] && dirty=" %F{yellow}✗%f"
+  echo " %F{blue}git:(%F{red}${branch}%F{blue})%f${dirty}"
+}
+setopt PROMPT_SUBST
+PROMPT='%(?:%F{green}➜:%F{red}➜)%f %F{cyan}%c%f$(_git_prompt_info) '
