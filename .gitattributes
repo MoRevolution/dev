@@ -24,3 +24,4 @@ files/Media Keys.ahk text eol=crlf
 # any zsh-related files must be LF
 *.zsh-theme text eol=lf
 *.zshrc    text eol=lf
+*.zshenv   text eol=lf
