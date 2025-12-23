@@ -11,6 +11,15 @@ def main():
         commands = [
             ("clink autorun", "clink autorun install --allusers"),
             ("clink theme", r"clink set ohmyposh.theme ~\zsh-ish.omp.json"),
+            (
+                "media keys startup",
+                r"powershell -Command \"$WshShell = New-Object -ComObject "
+                r"WScript.Shell; $shortcut = $WshShell.CreateShortcut("
+                r"\\\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\"
+                r"Startup\\Media Keys.lnk\\\"); $shortcut.TargetPath = "
+                r"\\\"$env:USERPROFILE\\Documents\\AutoHotkey\\Media Keys.ahk"
+                r"\\\"; $shortcut.Save()\"",
+            ),
             ("fnm lts", "fnm install --lts"),
             ("gh auth", "gh auth login"),
         ]
