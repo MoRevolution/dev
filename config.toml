@@ -1,12 +1,13 @@
 [meta]
-version = "<idk 🤷‍♂️>"
-description = "Dev Environment Setup Config"
+version = "2.0"
+description = "Dev Environment Setup Config (Nushell edition)"
 # anything unix is both WSL and macOS
 
 # Common packages (installed on all platforms)
 [packages.common]
-# Use "windows" for winget IDs, "brew" for Homebrew (WSL/macOS)
 git = { windows = "Git.Git", brew = "git", windows_args = "--custom '/components=\"gitlfs,assoc,autoupdate,windowsterminal\" /TASKS=\"!desktopicon,gitbashprofile\" /DEFAULTBRANCH=main /USEGITOPTIONALTOOLS=true'" }
+nushell = { windows = "Nushell.Nushell", brew = "nushell" }
+starship = { windows = "Starship.Starship", brew = "starship" }
 miniconda = { windows = "Anaconda.Miniconda3", brew = "miniconda" }
 uv = { windows = "astral-sh.uv", brew = "uv" }
 jq = { windows = "jqlang.jq", brew = "jq" }
@@ -21,67 +22,70 @@ lazydocker = { windows = "JesseDuffield.Lazydocker", brew = "lazydocker" }
 bat = { windows = "sharkdp.bat", brew = "bat" }
 vscode = { windows = "Microsoft.VisualStudioCode", brew = "visual-studio-code" }
 
-# GUI-only packages (Windows only)
+# GUI-only packages (Windows desktop / macOS with display)
 [packages.gui_only]
 windows_terminal = { windows = "Microsoft.WindowsTerminal" }
 powertoys = { windows = "Microsoft.PowerToys" }
 flow_launcher = { windows = "Flow-Launcher.Flow-Launcher" }
 firefox = { windows = "Mozilla.Firefox", brew = "firefox" }
 sevenzip = { windows = "7zip.7zip" }
+raycast = { windows = "Raycast.Raycast", brew = "raycast" }
 
 # Windows-specific packages
 [packages.windows_only]
-oh_my_posh = { windows = "JanDeDobbeleer.OhMyPosh" }
-clink = { windows = "chrisant996.Clink" }
-chocolatey = { windows = "Chocolatey.Choco" }
 autohotkey = { windows = "AutoHotkey.AutoHotkey" }
 
 # Unix packages (WSL and macOS)
 [packages.unix_only]
-zsh = { brew = "zsh" }
 tmux = { brew = "tmux" }
 htop = { brew = "htop" }
-tree = { brew = "tree" }
-vim = { brew = "vim" }
 neovim = { brew = "neovim" }
-wget = { brew = "wget" }
 
 # WSL-specific packages
 [packages.wsl_only]
-build_essential = { brew = "gcc" }  # brew equivalent of build-essential
+build_essential = { brew = "gcc" }
 
 # macOS-specific packages
 [packages.macos_only]
-# Add macOS-specific packages here
 
 # =============================================================================
 # Configuration files
-# Simple format: "source" = "destination" (same for all platforms)
-# Platform-specific: "source" = { windows = "dest", wsl = "dest", macos = "dest" }
-# Omit a platform to skip copying on that platform
 # =============================================================================
 
 [files]
 
 # Cross-platform configs
 "files/.gitconfig" = "~/.gitconfig"
-"files/.zshenv" = { wsl = "~/.zshenv", macos = "~/.zshenv" }
-"files/.zshrc" = { wsl = "~/.zshrc", macos = "~/.zshrc" }
-"files/.zimrc" = { wsl = "~/.zimrc", macos = "~/.zimrc" }
-"files/zsh-ish.omp.json" = { windows = "~/", wsl = "~/.config/", macos = "~/.config/" }
+"files/starship.toml" = "~/.config/starship.toml"
+"files/env.nu" = { windows = "~/AppData/Roaming/nushell/env.nu", wsl = "~/.config/nushell/env.nu", macos = "~/Library/Application Support/nushell/env.nu" }
+"files/config.nu" = { windows = "~/AppData/Roaming/nushell/config.nu", wsl = "~/.config/nushell/config.nu", macos = "~/Library/Application Support/nushell/config.nu" }
 
 # Windows-only configs
-"files/Microsoft.PowerShell_profile.ps1" = { windows = "~/Documents/PowerShell/" }
 "files/Wallpaper.jpg" = { windows = "~/Pictures/" }
 "files/Lockscreen.jpg" = { windows = "~/Pictures/" }
-"files/zoxide.lua" = { windows = "~/AppData/Local/clink/" }
-"files/oh-my-posh.lua" = { windows = "~/AppData/Local/clink/" }
 "files/Media Keys.ahk" = { windows = "~/Documents/AutoHotkey/" }
 
-# TODO: try to see if this can be done?? but too much work ughh
+# =============================================================================
+# Post-install commands
+# =============================================================================
+
+[post_install.all]
+fnm_lts = "fnm install --lts"
+gh_auth = "gh auth login"
+
+[post_install.windows]
+ahk_startup = 'powershell -Command "$WshShell = New-Object -ComObject WScript.Shell; $shortcut = $WshShell.CreateShortcut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Media Keys.lnk\"); $shortcut.TargetPath = \"$env:USERPROFILE\\Documents\\AutoHotkey\\Media Keys.ahk\"; $shortcut.Save()"'
+
+[post_install.unix]
+default_shell = "chsh -s (which nu)"
+
+# =============================================================================
+# System config (TODO)
+# =============================================================================
+
 [system_config.windows]
 enable_wsl = true
 enable_hyper_v = false
 
 [system_config.wsl]
-default_shell = "zsh"
+default_shell = "nu"
