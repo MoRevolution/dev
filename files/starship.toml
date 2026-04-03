@@ -1,0 +1,33 @@
+# Starship prompt — ported from zsh-ish oh-my-posh theme
+# Minimal robbyrussell-style: ➜ path git(branch)
+
+format = """$character$directory$git_branch$git_status$status """
+
+# Green ➜ on success, red on failure
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[➜](bold red)"
+
+[directory]
+style = "bold #56B6C2"
+truncation_length = 1
+truncate_to_repo = false
+
+[git_branch]
+format = " [git(](bold #DDB15F)[$branch]($style)[)](bold #DDB15F)"
+style = "#D4AAFC"
+
+[git_status]
+format = "[$all_status$ahead_behind]($style)"
+style = "#D4AAFC"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇡${ahead_count}⇣${behind_count}"
+modified = "!"
+staged = "+"
+untracked = "?"
+
+[status]
+disabled = false
+format = " [😖]($style)"
+style = "#DCB977"
