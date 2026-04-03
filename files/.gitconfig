@@ -26,6 +26,8 @@
     dfs = diff --staged
     # Fuzzy add: show diff preview and stage selected files
     fd = "!f() { git diff --name-only && git ls-files --others --exclude-standard | fzf --multi --preview 'bat --color=always {} 2>/dev/null || cat {}' | xargs -r git add; }; f"
+    glt='git log --oneline --decorate --graph --all'
+    glta="git log --graph --pretty='\''%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'\'' --all"
 
 [pull]
     rebase = true
