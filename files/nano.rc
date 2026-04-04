@@ -1,0 +1,16 @@
+set smooth
+set tabsize 4
+set tabstospaces
+set autoindent
+set trimblanks
+set linenumbers
+set constantshow
+
+set numbercolor white
+set historylog
+set mouse
+set morespace
+
+set nohelp
+
+include /usr/share/nano/*nanorc

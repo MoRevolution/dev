@@ -47,6 +47,8 @@ build_essential = { brew = "gcc" }
 
 # macOS-specific packages
 [packages.macos_only]
+aerospace = { brew = "nikitabobko/tap/aerospace", cask = true }
+ghostty = { brew = "ghostty" }
 
 # =============================================================================
 # Configuration files
@@ -57,6 +59,7 @@ build_essential = { brew = "gcc" }
 # Cross-platform configs
 "files/.gitconfig" = "~/.gitconfig"
 "files/starship.toml" = "~/.config/starship.toml"
+"files/aerospace.toml" = { macos = "~/.config/aerospace/aerospace.toml" }
 "files/env.nu" = { windows = "~/AppData/Roaming/nushell/env.nu", wsl = "~/.config/nushell/env.nu", macos = "~/Library/Application Support/nushell/env.nu" }
 "files/config.nu" = { windows = "~/AppData/Roaming/nushell/config.nu", wsl = "~/.config/nushell/config.nu", macos = "~/Library/Application Support/nushell/config.nu" }
 
