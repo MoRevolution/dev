@@ -78,8 +78,8 @@ def sections-for-platform [platform: string] {
         $sections = ($sections | append ["gui_only" "windows_only"])
     } else {
         $sections = ($sections | append "unix_only")
+        if $platform == "macos" { $sections = ($sections | append ["gui_only" "macos_only"]) }
         if $platform == "wsl" { $sections = ($sections | append "wsl_only") }
-        if $platform == "macos" { $sections = ($sections | append "macos_only") }
     }
     $sections
 }

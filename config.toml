@@ -48,7 +48,7 @@ build_essential = { brew = "gcc" }
 
 # macOS-specific packages
 [packages.macos_only]
-aerospace = { brew = "nikitabobko/tap/aerospace", cask = true }
+aerospace = { brew = "nikitabobko/tap/aerospace" }
 ghostty = { brew = "ghostty" }
 
 # =============================================================================
