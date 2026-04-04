@@ -84,6 +84,10 @@ alt-shift-tab = "focus --boundaries workspace --boundaries-action wrap-around-th
 # Open Ghostty
 alt-shift-t = '''exec-and-forget open -a Ghostty'''
 
+# Focus other monitor / move workspace to other monitor
+alt-backtick = "focus-monitor --wrap-around next"
+alt-shift-backtick = "move-workspace-to-monitor --wrap-around next"
+
 # Service mode
 alt-shift-semicolon = "mode service"
 
