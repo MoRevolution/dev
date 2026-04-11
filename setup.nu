@@ -94,6 +94,23 @@ def pkg-id-for [pkg: record, platform: string, manager: string] {
     }
 }
 
+# Collect all packages relevant to this platform as a flat list of {name, pkg, id}
+def pkgs-for-platform [all_pkgs: record, sections: list<string>, platform: string, manager: string] {
+    mut out = []
+    for section in $sections {
+        if not ($section in ($all_pkgs | columns)) { continue }
+        let pkgs = $all_pkgs | get $section
+        for col in ($pkgs | columns) {
+            let pkg = $pkgs | get $col
+            let id = pkg-id-for $pkg $platform $manager
+            if ($id != null) {
+                $out = ($out | append { name: $col, pkg: $pkg, id: $id })
+            }
+        }
+    }
+    $out
+}
+
 # =============================================================================
 # Commands
 # =============================================================================
@@ -115,6 +132,7 @@ def "main packages" [
     let sections = sections-for-platform $platform $personal
     let all_pkgs = $cfg.packages
     let pad = 22
+    let entries = pkgs-for-platform $all_pkgs $sections $platform $manager
 
     print $"Packages  \((ansi cyan)($platform)(ansi reset) / (ansi cyan)($manager)(ansi reset)\)\n"
 
@@ -129,44 +147,36 @@ def "main packages" [
     mut skipped_count = 0
     mut failed_count = 0
 
-    for section in $sections {
-        if not ($section in ($all_pkgs | columns)) { continue }
-        let pkgs = $all_pkgs | get $section
+    for entry in $entries {
+        let name_padded = ($entry.name | fill -w $pad -c ' ' -a l)
 
-        for col in ($pkgs | columns) {
-            let pkg = $pkgs | get $col
-            let id = pkg-id-for $pkg $platform $manager
-            if ($id == null) { continue }  # not for this platform
-            let name_padded = ($col | fill -w $pad -c ' ' -a l)
+        if (pkg-is-installed $manager $entry.id) {
+            print $"  (ansi dark_gray)✓ ($name_padded) skip(ansi reset)"
+            $skipped_count = $skipped_count + 1
+            continue
+        }
 
-            if (pkg-is-installed $manager $id) {
-                print $"  (ansi dark_gray)✓ ($name_padded) skip(ansi reset)"
-                $skipped_count = $skipped_count + 1
-                continue
-            }
+        if $dry_run {
+            print $"  (ansi cyan)○ ($name_padded) install(ansi reset)"
+            $installed_count = $installed_count + 1
+            continue
+        }
 
-            if $dry_run {
-                print $"  (ansi cyan)○ ($name_padded) install(ansi reset)"
-                $installed_count = $installed_count + 1
-                continue
-            }
+        # Show installing indicator, then overwrite with result
+        print $"  (ansi dark_gray)◌ ($name_padded) installing...(ansi reset)" --no-newline
+        let args = if ("windows_args" in ($entry.pkg | columns)) { $entry.pkg.windows_args } else { null }
+        let result = (pkg-install $manager $entry.id $args)
+        let ok = ($result.exit_code == 0)
 
-            # Show installing indicator, then overwrite with result
-            print $"  (ansi dark_gray)◌ ($name_padded) installing...(ansi reset)" --no-newline
-            let args = if ("windows_args" in ($pkg | columns)) { $pkg.windows_args } else { null }
-            let result = (pkg-install $manager $id $args)
-            let ok = ($result.exit_code == 0)
-
-            if $ok {
-                print $"(char cr)  (ansi green)✓ ($name_padded) installed(ansi reset)     "
-                $installed_count = $installed_count + 1
-            } else {
-                print $"(char cr)  (ansi red)✗ ($name_padded) failed(ansi reset)        "
-                $failed_count = $failed_count + 1
-                let log = ([($result.stdout | default "") ($result.stderr | default "")] | str join "\n" | str trim)
-                if (not ($log | is-empty)) {
-                    print $"    (ansi dark_gray)($log)(ansi reset)"
-                }
+        if $ok {
+            print $"(char cr)  (ansi green)✓ ($name_padded) installed(ansi reset)     "
+            $installed_count = $installed_count + 1
+        } else {
+            print $"(char cr)  (ansi red)✗ ($name_padded) failed(ansi reset)        "
+            $failed_count = $failed_count + 1
+            let log = ([($result.stdout | default "") ($result.stderr | default "")] | str join "\n" | str trim)
+            if (not ($log | is-empty)) {
+                print $"    (ansi dark_gray)($log)(ansi reset)"
             }
         }
     }
@@ -226,7 +236,7 @@ def "main files" [
         }
     }
 
-    $results | table
+    print ($results | table)
 }
 
 # Generate init files for starship and zoxide
@@ -335,29 +345,22 @@ def "main status" [
     let sections = sections-for-platform $platform $personal
     let all_pkgs = $cfg.packages
     let pad = 22
+    let entries = pkgs-for-platform $all_pkgs $sections $platform $manager
 
     print $"Status  \((ansi cyan)($platform)(ansi reset) / (ansi cyan)($manager)(ansi reset)\)\n"
 
     mut installed_count = 0
     mut total = 0
 
-    for section in $sections {
-        if not ($section in ($all_pkgs | columns)) { continue }
-        let pkgs = $all_pkgs | get $section
+    for entry in $entries {
+        let name_padded = ($entry.name | fill -w $pad -c ' ' -a l)
+        $total = $total + 1
 
-        for col in ($pkgs | columns) {
-            let pkg = $pkgs | get $col
-            let id = pkg-id-for $pkg $platform $manager
-            if ($id == null) { continue }
-            let name_padded = ($col | fill -w $pad -c ' ' -a l)
-            $total = $total + 1
-
-            if (pkg-is-installed $manager $id) {
-                print $"  (ansi green)✓(ansi reset) ($name_padded) (ansi dark_gray)installed(ansi reset)"
-                $installed_count = $installed_count + 1
-            } else {
-                print $"  (ansi red)✗(ansi reset) ($name_padded) (ansi dark_gray)missing(ansi reset)"
-            }
+        if (pkg-is-installed $manager $entry.id) {
+            print $"  (ansi green)✓(ansi reset) ($name_padded) (ansi dark_gray)installed(ansi reset)"
+            $installed_count = $installed_count + 1
+        } else {
+            print $"  (ansi red)✗(ansi reset) ($name_padded) (ansi dark_gray)missing(ansi reset)"
         }
     }
 

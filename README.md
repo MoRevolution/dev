@@ -39,13 +39,7 @@ everything lives in `config.toml` — edit it to swap in your own. mine are pret
 
 ## what gets copied
 
-- `starship.toml` — prompt
-- `env.nu` + `config.nu` — nushell config
-- `.gitconfig` — git aliases
-- `ghostty.config` — ghostty terminal (macos)
-- `aerospace.toml` — tiling WM (macos)
-- `.zshrc` — zsh fallback (macos / wsl)
-- `Media Keys.ahk` — media keys (windows)
+anything you put in the `[files]` section of `config.toml` gets copied to the right place per platform. i have all my configs under `files/` so everything there that matters get copied over
 
 ## after setup
 
