@@ -74,6 +74,7 @@ ghostty = { brew = "ghostty" }
 "files/Wallpaper.jpg" = { windows = "~/Pictures/" }
 "files/Lockscreen.jpg" = { windows = "~/Pictures/" }
 "files/Media Keys.ahk" = { windows = "~/Documents/AutoHotkey/" }
+"files/.zshrc" = { wsl = "~/.zshrc", macos = "~/.zshrc" }
 
 # =============================================================================
 # Post-install commands
