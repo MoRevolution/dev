@@ -189,9 +189,9 @@ def "main files" [
 
     mut results = []
 
-    for entry in ($files | transpose source dest_data) {
-        let source = $entry.source
-        let dest_data = $entry.dest_data
+    for col in ($files | columns) {
+        let dest_data = $files | get $col
+        let source = $col
 
         # Resolve destination for this platform
         let dest = if ($dest_data | describe | str starts-with "record") {
@@ -215,7 +215,7 @@ def "main files" [
         } else {
             let result = try {
                 let dest_expanded = ($dest | path expand)
-                let dest_dir = if (($dest_expanded | str ends-with "/") or ($dest_expanded | str ends-with "\\")) {
+                let dest_dir = if ($dest_expanded | str ends-with "/" or ($dest_expanded | str ends-with "\\")) {
                     $dest_expanded
                 } else {
                     $dest_expanded | path dirname
@@ -236,15 +236,12 @@ def "main init" [
     --dry-run (-n)
     --config (-c): string = "config.toml"
 ] {
-    let nuconfig_dir = $nu.default-config-dir
+    let nuconfig_dir = match $nu.os-info.name {
+        "windows" => $"($env.APPDATA)\nushell"
+        _ => $"($env.HOME)/.config/nushell"
+    }
 
     mkdir $nuconfig_dir
-
-    # Ensure stub files exist so `source` in config.nu never fails
-    for f in ["starship.nu" "zoxide.nu"] {
-        let path = $"($nuconfig_dir)/($f)"
-        if not ($path | path exists) { "" | save $path }
-    }
 
     if not $dry_run {
         try {
@@ -284,18 +281,11 @@ def "main post-install" [
     }
 
     # Collect platform-specific commands
-    let platform_keys = match $platform {
-        "macos" => ["unix" "macos"]
-        "wsl" => ["unix" "wsl"]
-        "linux" => ["unix" "linux"]
-        _ => [$platform]
-    }
-    for platform_key in $platform_keys {
-        if ($platform_key in ($post | columns)) {
-            let plat_cmds = $post | get $platform_key
-            for col in ($plat_cmds | columns) {
-                $commands = ($commands | append { name: $col, cmd: ($plat_cmds | get $col) })
-            }
+    let platform_key = if (is-unix $platform) { "unix" } else { $platform }
+    if ($platform_key in ($post | columns)) {
+        let plat_cmds = $post | get $platform_key
+        for col in ($plat_cmds | columns) {
+            $commands = ($commands | append { name: $col, cmd: ($plat_cmds | get $col) })
         }
     }
 

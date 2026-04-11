@@ -65,6 +65,7 @@ ghostty = { brew = "ghostty" }
 "files/.gitconfig" = "~/.gitconfig"
 "files/starship.toml" = "~/.config/starship.toml"
 "files/aerospace.toml" = { macos = "~/.config/aerospace/aerospace.toml" }
+"files/ghostty.config" = { macos = "~/.config/ghostty/config" }
 "files/env.nu" = { windows = "~/AppData/Roaming/nushell/env.nu", wsl = "~/.config/nushell/env.nu", macos = "~/Library/Application Support/nushell/env.nu" }
 "files/config.nu" = { windows = "~/AppData/Roaming/nushell/config.nu", wsl = "~/.config/nushell/config.nu", macos = "~/Library/Application Support/nushell/config.nu" }
 
@@ -86,6 +87,9 @@ ahk_startup = 'powershell -Command "$WshShell = New-Object -ComObject WScript.Sh
 
 [post_install.unix]
 default_shell = "chsh -s (which nu)"
+
+[post_install.macos]
+wallpaper = 'let w = ($env.HOME | path join "Pictures/Wallpaper.jpg"); osascript -e $"tell application \"System Events\" to tell every desktop to set picture to POSIX file \"($w)\""'
 
 # =============================================================================
 # System config (TODO)
