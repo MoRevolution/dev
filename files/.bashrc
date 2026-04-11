@@ -1,0 +1,6 @@
+alias cat='bat'
+alias ls='ls --color=auto'
+alias ll='ls -la'
+alias la='ls -A'
+alias l='ls -CF'
+alias copy='copy.exe'

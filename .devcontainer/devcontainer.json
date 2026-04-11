@@ -1,0 +1,24 @@
+{
+    "name": "dev-setup",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": ".."
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "thenuprojectcontributors.vscode-nushell-lang"
+            ]
+        }
+    },
+    "postCreateCommand": "nu setup.nu --dry-run",
+    "remoteUser": "root",
+    "settings": {
+        "terminal.integrated.defaultProfile.linux": "nu",
+        "terminal.integrated.profiles.linux": {
+            "nu": {
+                "path": "/usr/local/bin/nu"
+            }
+        }
+    }
+}
