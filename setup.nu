@@ -284,11 +284,18 @@ def "main post-install" [
     }
 
     # Collect platform-specific commands
-    let platform_key = if (is-unix $platform) { "unix" } else { $platform }
-    if ($platform_key in ($post | columns)) {
-        let plat_cmds = $post | get $platform_key
-        for col in ($plat_cmds | columns) {
-            $commands = ($commands | append { name: $col, cmd: ($plat_cmds | get $col) })
+    let platform_keys = match $platform {
+        "macos" => ["unix" "macos"]
+        "wsl" => ["unix" "wsl"]
+        "linux" => ["unix" "linux"]
+        _ => [$platform]
+    }
+    for platform_key in $platform_keys {
+        if ($platform_key in ($post | columns)) {
+            let plat_cmds = $post | get $platform_key
+            for col in ($plat_cmds | columns) {
+                $commands = ($commands | append { name: $col, cmd: ($plat_cmds | get $col) })
+            }
         }
     }
 
