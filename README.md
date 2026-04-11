@@ -1,80 +1,51 @@
 # dev
 
-dotfiles + setup. was 850 lines of python. now it's nushell + starship.
+i've had to set up 9 laptops/vms over the past 3 years (4 in the past 5 months as of april 2026, don't ask why), and i'm tired. this is my attempt to semi-automate that and make myself less irritable.
 
-## get nushell
+> **note** nushell 0.111 has a [bug](https://github.com/nushell/nushell/issues/17719) where `nu setup.nu -h` shows duplicated subcommands. fixed in 0.112.1, but not on brew yet as of me writing this
+> **another note:** i haven't tested this as much on wsl or other linux flavors as much so feel free to open an issue or a PR
 
-**windows:**
+to get started...
 
-```
-winget install Nushell.Nushell
-```
+## get nushell first
 
-**macos / wsl:** install [homebrew](https://brew.sh) first, then:
+**windows:** `winget install Nushell.Nushell`
 
-```
-brew install nushell
-```
+**macos / wsl:** install [homebrew](https://brew.sh), then `brew install nushell`
 
-## run setup
+## run the setup script
 
-```
-nu setup.nu                      # everything
-nu setup.nu --dry-run            # see what it would do
-```
-
-or just the parts you want:
-
-```
+```nushell
+nu setup.nu                      # run everything
 nu setup.nu packages             # install tools
-nu setup.nu files                # copy configs
-nu setup.nu post-install         # gh auth, fnm lts, etc
-nu setup.nu status               # check what's installed
+nu setup.nu init                 # generate starship/zoxide init files
+nu setup.nu files                # copy configs to the right place
+nu setup.nu post-install         # gh auth, fnm lts, default shell, wallpaper
+nu setup.nu status               # see what's installed
 ```
 
-## what's in `config.toml`
+add `--dry-run` to preview without doing anything.
 
-nushell reads toml natively so the whole config is just a file. no parsing libraries.
+## what gets installed
 
-**all platforms** — git, nushell, starship, miniconda, uv, gh, fnm, fzf, fd, zoxide, ripgrep, lazygit, lazydocker, bat, vscode, raycast
+everything lives in `config.toml` — edit it to swap in your own. mine are pretty basic right now and i'll probably keep adding to it.
 
-**windows** — terminal, powertoys, flow launcher, firefox, 7zip, autohotkey
+- **everywhere** — git, nushell, starship, uv, gh, fnm, fzf, fd, zoxide, ripgrep, etc.
+- **unix** — tmux, htop, neovim
+- **macos** — aerospace, ghostty
+- **windows** — terminal, powertoys, autohotkey
+- **personal** (add `--personal` flag) — zotero, sioyek, etc., the stuff you wouldn't want on a work laptop
 
-**unix** — tmux, htop, tree, vim, neovim, wget
+## what gets copied
 
-## what's in the configs
-
-`setup.nu files` copies these to the right place per platform:
-
-- `starship.toml` — prompt theme
-- `env.nu` — starship, zoxide, fnm init
-- `config.nu` — aliases, custom commands
+- `starship.toml` — prompt
+- `env.nu` + `config.nu` — nushell config
 - `.gitconfig` — git aliases
-- `Media Keys.ahk` — media keys (windows only)
+- `ghostty.config` — ghostty terminal (macos)
+- `aerospace.toml` — tiling WM (macos)
+- `.zshrc` — zsh fallback (macos / wsl)
+- `Media Keys.ahk` — media keys (windows)
 
 ## after setup
 
-restart nushell and everything should work.
-
-set nushell as default:
-
-- **unix** — `chsh -s (which nu)`
-- **windows** — set as default profile in windows terminal settings
-
-config lives at:
-
-- **windows** — `~/AppData/Roaming/nushell/`
-- **linux/wsl** — `~/.config/nushell/`
-- **macos** — `~/Library/Application Support/nushell/`
-
-## custom commands
-
-these come with `config.nu`:
-
-- `mkcd foo` — mkdir + cd
-- `fdz name` — find file with fd, jump to its dir
-- `pubip` — public ip
-- `z dir` — zoxide smart cd
-- `cat` → `bat`
-- `lg` → `lazygit`
-- `ld` → `lazydocker`
+restart your terminal and set nushell as default: `chsh -s (which nu)` on unix, or set it in windows terminal settings.

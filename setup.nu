@@ -1,8 +1,6 @@
 #!/usr/bin/env nu
-# Dev Environment Setup — Nushell edition
-    
 # =============================================================================
-# Platform detection
+# Platform detection stuffs
 # =============================================================================
 
 def get-platform [] {
@@ -189,9 +187,9 @@ def "main files" [
 
     mut results = []
 
-    for col in ($files | columns) {
-        let dest_data = $files | get $col
-        let source = $col
+    for entry in ($files | transpose source dest_data) {
+        let source = $entry.source
+        let dest_data = $entry.dest_data
 
         # Resolve destination for this platform
         let dest = if ($dest_data | describe | str starts-with "record") {
@@ -215,7 +213,7 @@ def "main files" [
         } else {
             let result = try {
                 let dest_expanded = ($dest | path expand)
-                let dest_dir = if ($dest_expanded | str ends-with "/" or ($dest_expanded | str ends-with "\\")) {
+                let dest_dir = if (($dest_expanded | str ends-with "/") or ($dest_expanded | str ends-with "\\")) {
                     $dest_expanded
                 } else {
                     $dest_expanded | path dirname
@@ -236,12 +234,17 @@ def "main init" [
     --dry-run (-n)
     --config (-c): string = "config.toml"
 ] {
-    let nuconfig_dir = match $nu.os-info.name {
-        "windows" => $"($env.APPDATA)\nushell"
-        _ => $"($env.HOME)/.config/nushell"
-    }
+    let nuconfig_dir = $nu.default-config-dir
 
     mkdir $nuconfig_dir
+
+    # Ensure source targets exist even before the tools are installed.
+    for f in ["starship.nu" "zoxide.nu"] {
+        let path = $"($nuconfig_dir)/($f)"
+        if not ($path | path exists) {
+            "" | save --force $path
+        }
+    }
 
     if not $dry_run {
         try {
@@ -281,11 +284,18 @@ def "main post-install" [
     }
 
     # Collect platform-specific commands
-    let platform_key = if (is-unix $platform) { "unix" } else { $platform }
-    if ($platform_key in ($post | columns)) {
-        let plat_cmds = $post | get $platform_key
-        for col in ($plat_cmds | columns) {
-            $commands = ($commands | append { name: $col, cmd: ($plat_cmds | get $col) })
+    let platform_keys = match $platform {
+        "macos" => ["unix" "macos"]
+        "wsl" => ["unix" "wsl"]
+        "linux" => ["unix" "linux"]
+        _ => [$platform]
+    }
+    for platform_key in $platform_keys {
+        if ($platform_key in ($post | columns)) {
+            let plat_cmds = $post | get $platform_key
+            for col in ($plat_cmds | columns) {
+                $commands = ($commands | append { name: $col, cmd: ($plat_cmds | get $col) })
+            }
         }
     }
 
@@ -311,7 +321,7 @@ def "main post-install" [
 
 # Show installation status
 def "main status" [
-    --personal (-p)  # Include personal packages
+    --personal (-p) 
     --config (-c): string = "config.toml"
 ] {
     let platform = get-platform
@@ -354,10 +364,10 @@ def "main status" [
     print $"\n  ($installed_count)/($total) installed"
 }
 
-# Run full setup (packages + files + post-install)
+# Run full setup (packages + files + init + post-install)
 def main [
     --dry-run (-n)  # Preview without making changes
-    --personal (-p)  # Include personal packages (zotero, sioyek)
+    --personal (-p)  # Include personal 
     --config (-c): string = "config.toml"  # Config file path
 ] {
     print $"(ansi blue_bold)Dev Environment Setup(ansi reset)\n"
