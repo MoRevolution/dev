@@ -30,7 +30,11 @@ flow_launcher = { windows = "Flow-Launcher.Flow-Launcher" }
 firefox = { windows = "Mozilla.Firefox", brew = "firefox" }
 sevenzip = { windows = "7zip.7zip" }
 raycast = { windows = "Raycast.Raycast", brew = "raycast" }
+
+# Personal packages (only with --personal flag)
+[packages.personal]
 zotero = { windows = "DigitalScholar.Zotero", brew = "zotero" }
+sioyek = { windows = "ahrm.sioyek", brew = "sioyek" }
 
 # Windows-specific packages
 [packages.windows_only]

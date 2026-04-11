@@ -1,6 +1,6 @@
 #!/usr/bin/env nu
 # Dev Environment Setup — Nushell edition
-
+    
 # =============================================================================
 # Platform detection
 # =============================================================================
@@ -72,7 +72,7 @@ def pkg-install [manager: string, id: string, args?: string] {
 # Section filtering
 # =============================================================================
 
-def sections-for-platform [platform: string] {
+def sections-for-platform [platform: string, personal: bool] {
     mut sections = ["common"]
     if $platform == "windows" {
         $sections = ($sections | append ["gui_only" "windows_only"])
@@ -81,6 +81,7 @@ def sections-for-platform [platform: string] {
         if $platform == "macos" { $sections = ($sections | append ["gui_only" "macos_only"]) }
         if $platform == "wsl" { $sections = ($sections | append "wsl_only") }
     }
+    if $personal { $sections = ($sections | append "personal") }
     $sections
 }
 
@@ -102,6 +103,7 @@ def pkg-id-for [pkg: record, platform: string, manager: string] {
 # Install packages from config
 def "main packages" [
     --dry-run (-n)  # Preview without installing
+    --personal (-p)  
     --config (-c): string = "config.toml"  # Config file path
 ] {
     let platform = get-platform
@@ -112,7 +114,7 @@ def "main packages" [
     }
 
     let cfg = open $config
-    let sections = sections-for-platform $platform
+    let sections = sections-for-platform $platform $personal
     let all_pkgs = $cfg.packages
     let pad = 22
 
@@ -211,7 +213,7 @@ def "main files" [
         if $dry_run {
             $results = ($results | append { source: $source, dest: $dest, action: "COPY" })
         } else {
-            let ok = try {
+            let result = try {
                 let dest_expanded = ($dest | path expand)
                 let dest_dir = if ($dest_expanded | str ends-with "/" or ($dest_expanded | str ends-with "\\")) {
                     $dest_expanded
@@ -220,10 +222,9 @@ def "main files" [
                 }
                 mkdir $dest_dir
                 cp $source $dest_expanded
-                true
-            } catch { false }
-            let action = if $ok { "OK" } else { "FAIL" }
-            $results = ($results | append { source: $source, dest: $dest, action: $action })
+                "OK"
+            } catch {|e| $"FAIL: ($e.msg)" }
+            $results = ($results | append { source: $source, dest: $dest, action: $result })
         }
     }
 
@@ -310,6 +311,7 @@ def "main post-install" [
 
 # Show installation status
 def "main status" [
+    --personal (-p)  # Include personal packages
     --config (-c): string = "config.toml"
 ] {
     let platform = get-platform
@@ -320,7 +322,7 @@ def "main status" [
     }
 
     let cfg = open $config
-    let sections = sections-for-platform $platform
+    let sections = sections-for-platform $platform $personal
     let all_pkgs = $cfg.packages
     let pad = 22
 
@@ -355,6 +357,7 @@ def "main status" [
 # Run full setup (packages + files + post-install)
 def main [
     --dry-run (-n)  # Preview without making changes
+    --personal (-p)  # Include personal packages (zotero, sioyek)
     --config (-c): string = "config.toml"  # Config file path
 ] {
     print $"(ansi blue_bold)Dev Environment Setup(ansi reset)\n"
@@ -362,7 +365,7 @@ def main [
     if $dry_run { print $"(ansi yellow)DRY RUN MODE(ansi reset)\n" }
 
     print "── Packages ──"
-    main packages --dry-run=$dry_run --config $config
+    main packages --dry-run=$dry_run --personal=$personal --config $config
 
     print "\n── Files ──"
     main files --dry-run=$dry_run --config $config
