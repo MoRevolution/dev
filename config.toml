@@ -21,6 +21,7 @@ lazygit = { windows = "JesseDuffield.Lazygit", brew = "lazygit" }
 lazydocker = { windows = "JesseDuffield.Lazydocker", brew = "lazydocker" }
 bat = { windows = "sharkdp.bat", brew = "bat" }
 vscode = { windows = "Microsoft.VisualStudioCode", brew = "visual-studio-code" }
+jetbrains_mono_nerd_font = { brew = "font-jetbrains-mono-nerd-font" }
 
 # GUI-only packages (Windows desktop / macOS with display)
 [packages.gui_only]
