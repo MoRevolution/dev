@@ -78,8 +78,8 @@ alt-shift-8 = ["move-node-to-workspace 8", "workspace 8"]
 alt-shift-9 = ["move-node-to-workspace 9", "workspace 9"]
 
 # Cycle windows in current workspace (like Windows alt-tab)
-alt-tab = "focus --boundaries workspace --boundaries-action wrap-around-the-workspace next"
-alt-shift-tab = "focus --boundaries workspace --boundaries-action wrap-around-the-workspace prev"
+alt-tab = "focus --boundaries workspace --boundaries-action wrap-around-the-workspace dfs-next"
+alt-shift-tab = "focus --boundaries workspace --boundaries-action wrap-around-the-workspace dfs-prev"
 
 # Open Ghostty
 alt-shift-t = '''exec-and-forget open -a Ghostty'''

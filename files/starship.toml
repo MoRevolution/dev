@@ -14,7 +14,7 @@ truncation_length = 1
 truncate_to_repo = false
 
 [git_branch]
-format = " [git(](bold #DDB15F)[$branch]($style)[)](bold #DDB15F)"
+format = " [git\\(](bold #DDB15F)[$branch]($style)[\\)](bold #DDB15F)"
 style = "#D4AAFC"
 
 [git_status]
