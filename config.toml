@@ -55,6 +55,7 @@ build_essential = { brew = "gcc" }
 [packages.macos_only]
 aerospace = { brew = "nikitabobko/tap/aerospace" }
 ghostty = { brew = "ghostty" }
+alt_tab = { brew = "alt-tab" }
 
 # =============================================================================
 # Configuration files
