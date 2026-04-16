@@ -36,6 +36,8 @@ raycast = { windows = "Raycast.Raycast", brew = "raycast" }
 [packages.personal]
 zotero = { windows = "DigitalScholar.Zotero", brew = "zotero" }
 sioyek = { windows = "ahrm.sioyek", brew = "sioyek" }
+tectonic = { brew = "tectonic" }
+
 
 # Windows-specific packages
 [packages.windows_only]
