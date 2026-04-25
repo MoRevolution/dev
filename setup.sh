@@ -76,7 +76,7 @@ if ! command -v nu >/dev/null 2>&1; then
 fi
 
 if ! command -v nu >/dev/null 2>&1; then
-  echo "Nushell installation did not succeed. Please install it manually."
+  echo "Nushell installation did not succeed. Check the errors above or install manually: https://www.nushell.sh/"
   exit 1
 fi
 

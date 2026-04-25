@@ -11,7 +11,7 @@ to get started...
 ## run setup directly
 
 ```bash
-./setup.sh                       # install nushell if needed, then run everything
+./setup.sh                       # install Nushell if needed, then run everything
 ./setup.sh --dry-run             # preview everything
 ./setup.sh packages              # install tools only
 ./setup.sh init                  # generate starship/zoxide init files only
@@ -21,7 +21,7 @@ to get started...
 ./setup.sh packages --personal   # include personal package section
 ```
 
-if you already have nushell installed, this wrapper just forwards args to `setup.nu`.
+If you already have Nushell installed, this wrapper just forwards args to `setup.nu`.
 
 add `--dry-run` to preview without doing anything.
 
