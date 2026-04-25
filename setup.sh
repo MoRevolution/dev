@@ -20,6 +20,16 @@ EOF
 }
 
 install_nushell() {
+  run_winget_install() {
+    if command -v winget >/dev/null 2>&1; then
+      winget install --id Nushell.Nushell --accept-source-agreements --accept-package-agreements
+    elif command -v powershell.exe >/dev/null 2>&1; then
+      powershell.exe -NoProfile -Command "winget install --id Nushell.Nushell --accept-source-agreements --accept-package-agreements"
+    else
+      return 1
+    fi
+  }
+
   local uname_out
   uname_out="$(uname -s)"
 
@@ -36,19 +46,22 @@ install_nushell() {
       if command -v brew >/dev/null 2>&1; then
         brew install nushell
       elif command -v apt-get >/dev/null 2>&1; then
-        sudo apt-get update
-        sudo apt-get install -y nushell
+        if ! sudo apt-get update; then
+          echo "apt-get update failed. Please check your apt configuration."
+          exit 1
+        fi
+        if ! sudo apt-get install -y nushell; then
+          echo "apt-get could not install Nushell (package may be unavailable in your repos)."
+          echo "Try installing via Homebrew (if available) or manually: https://www.nushell.sh/"
+          exit 1
+        fi
       else
         echo "No supported package manager found (expected brew or apt-get)."
         exit 1
       fi
       ;;
     MINGW*|MSYS*|CYGWIN*)
-      if command -v winget >/dev/null 2>&1; then
-        winget install --id Nushell.Nushell --accept-source-agreements --accept-package-agreements
-      elif command -v powershell.exe >/dev/null 2>&1; then
-        powershell.exe -NoProfile -Command "winget install --id Nushell.Nushell --accept-source-agreements --accept-package-agreements"
-      else
+      if ! run_winget_install; then
         echo "winget not found. Install Nushell manually from https://www.nushell.sh/"
         exit 1
       fi
