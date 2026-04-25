@@ -8,22 +8,20 @@ i've had to set up 9 laptops/vms over the past 3 years (4 in the past 5 months a
 
 to get started...
 
-## get nushell first
+## run setup directly
 
-**windows:** `winget install Nushell.Nushell`
-
-**macos / wsl:** install [homebrew](https://brew.sh), then `brew install nushell`
-
-## run the setup script
-
-```nushell
-nu setup.nu                      # run everything
-nu setup.nu packages             # install tools
-nu setup.nu init                 # generate starship/zoxide init files
-nu setup.nu files                # copy configs to the right place
-nu setup.nu post-install         # gh auth, fnm lts, default shell, wallpaper
-nu setup.nu status               # see what's installed
+```bash
+./setup.sh                       # install nushell if needed, then run everything
+./setup.sh --dry-run             # preview everything
+./setup.sh packages              # install tools only
+./setup.sh init                  # generate starship/zoxide init files only
+./setup.sh files                 # copy configs only
+./setup.sh post-install          # gh auth, fnm lts, default shell, wallpaper
+./setup.sh status                # see what's installed
+./setup.sh packages --personal   # include personal package section
 ```
+
+if you already have nushell installed, this wrapper just forwards args to `setup.nu`.
 
 add `--dry-run` to preview without doing anything.
 
