@@ -4,7 +4,7 @@ i've had to set up 9 laptops/vms over the past 3 years (4 in the past 5 months a
 
 > **note** nushell 0.111 has a [bug](https://github.com/nushell/nushell/issues/17719) where `nu setup.nu -h` shows duplicated subcommands. fixed in 0.112.1, but not on brew yet as of me writing this
 
-> **another note:** i haven't tested this as much on wsl or other linux flavors as much so feel free to open an issue or a PR
+> **another note:** i haven't tested this as much on wsl or other linux flavors so feel free to open an issue or a PR
 
 to get started...
 
