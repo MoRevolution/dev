@@ -1,7 +1,7 @@
 # Starship prompt — ported from zsh-ish oh-my-posh theme
 # Minimal robbyrussell-style: ➜ path git(branch)
 
-format = """$character$directory$git_branch$git_status$status """
+format = """$directory$git_branch$git_status$status """
 
 # Green ➜ on success, red on failure
 [character]
