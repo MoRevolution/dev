@@ -56,9 +56,9 @@ def pkg-install [manager: string, id: string, args?: string] {
     match $manager {
         "winget" => {
             if ($args | is-empty) {
-                ^winget install $id --accept-source-agreements --accept-package-agreements --silent | complete
+                ^winget install $id --accept-source-agreements --accept-package-agreements --source winget --silent | complete
             } else {
-                ^winget install $id --accept-source-agreements --accept-package-agreements --silent $args | complete
+                ^winget install $id --accept-source-agreements --accept-package-agreements --source winget --silent $args | complete
             }
         }
         "brew" => { ^brew install $id | complete }
