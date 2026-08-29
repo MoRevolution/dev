@@ -42,7 +42,7 @@ def pkg-is-installed [manager: string, id: string] {
             $list | str contains ($id | str downcase)
         }
         "brew" => {
-            let installed = (^brew list --formula -1 | lines) ++ (^brew list --cask -1 | lines)
+            let installed = (^brew list --formula --full-name | lines) ++ (^brew list --cask --full-name | lines)
             ($id | str downcase) in ($installed | each { str downcase })
         }
         "apt" => {

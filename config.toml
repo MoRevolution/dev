@@ -22,6 +22,7 @@ lazydocker = { windows = "JesseDuffield.Lazydocker", brew = "lazydocker" }
 bat = { windows = "sharkdp.bat", brew = "bat" }
 vscode = { windows = "Microsoft.VisualStudioCode", brew = "visual-studio-code" }
 jetbrains_mono_nerd_font = { brew = "font-jetbrains-mono-nerd-font" }
+opencode = { brew = "anomalyco/tap/opencode" }
 
 # GUI-only packages (Windows desktop / macOS with display)
 [packages.gui_only]
@@ -73,6 +74,7 @@ alt_tab = { brew = "alt-tab" }
 "files/Microsoft.PowerShell_profile.ps1" = { windows = "~/Documents/PowerShell/Microsoft.PowerShell_profile.ps1" }
 "files/env.nu" = { windows = "~/AppData/Roaming/nushell/env.nu", wsl = "~/.config/nushell/env.nu", macos = "~/Library/Application Support/nushell/env.nu" }
 "files/config.nu" = { windows = "~/AppData/Roaming/nushell/config.nu", wsl = "~/.config/nushell/config.nu", macos = "~/Library/Application Support/nushell/config.nu" }
+"files/opencode.nu" = { wsl = "~/.config/nushell/opencode.nu", macos = "~/Library/Application Support/nushell/opencode.nu" }
 
 # Windows-only configs
 "files/Wallpaper.jpg" = { windows = "~/Pictures/" }

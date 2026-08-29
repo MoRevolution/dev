@@ -8,9 +8,11 @@ const nu_config_dir = $nu.default-config-dir
 # Create empty stubs so `source` doesn't fail before they've been generated.
 const starship_nu = ($nu_config_dir | path join "starship.nu")
 const zoxide_nu  = ($nu_config_dir | path join "zoxide.nu")
+const opencode_nu = ($nu_config_dir | path join "opencode.nu")
 
 source $starship_nu
 source $zoxide_nu
+if ($opencode_nu | path exists) { source $opencode_nu }
 
 # --- Shell settings ---
 $env.config.show_banner = false
