@@ -39,6 +39,9 @@ alt-slash = "layout tiles horizontal vertical"
 alt-comma = "layout accordion horizontal vertical"
 alt-f = "fullscreen"
 
+# Un-split: collapse all tiled windows back to the default accordion layout
+alt-r = "flatten-workspace-tree"
+
 # Focus (vim-style)
 alt-h = "focus left"
 alt-j = "focus down"

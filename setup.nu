@@ -239,6 +239,59 @@ def "main files" [
     print ($results | table)
 }
 
+# Reverse of `files`: pull the live configs back into files/ so edits made on the machine get committed
+def "main collect" [
+    --dry-run (-n)
+    --config (-c): string = "config.toml"
+] {
+    let platform = get-platform
+    let cfg = open $config
+
+    print $"Platform: (ansi cyan)($platform)(ansi reset)\n"
+
+    mut results = []
+
+    for entry in ($cfg.files | transpose source dest_data) {
+        let dest_data = $entry.dest_data
+        let dest = if ($dest_data | describe | str starts-with "record") {
+            if ($platform in ($dest_data | columns)) { $dest_data | get $platform } else { null }
+        } else {
+            $dest_data
+        }
+
+        if ($dest == null) {
+            $results = ($results | append { dest: "-", source: $entry.source, action: "SKIP (no dest)" })
+            continue
+        }
+
+        # a trailing slash means the file kept its own name inside that dir
+        let live = if (($dest | str ends-with "/") or ($dest | str ends-with "\\")) {
+            $dest | path expand | path join ($entry.source | path basename)
+        } else {
+            $dest | path expand
+        }
+
+        if not ($live | path exists) {
+            $results = ($results | append { dest: $dest, source: $entry.source, action: "SKIP (not on machine)" })
+            continue
+        }
+
+        if $dry_run {
+            $results = ($results | append { dest: $dest, source: $entry.source, action: "COLLECT" })
+        } else {
+            let result = try {
+                mkdir ($entry.source | path dirname)
+                cp $live $entry.source
+                "OK"
+            } catch {|e| $"FAIL: ($e.msg)" }
+            $results = ($results | append { dest: $dest, source: $entry.source, action: $result })
+        }
+    }
+
+    print ($results | table)
+    print $"\n(ansi yellow)Review with `git diff files/` before committing.(ansi reset)"
+}
+
 # Generate init files for starship and zoxide
 def "main init" [
     --dry-run (-n)
