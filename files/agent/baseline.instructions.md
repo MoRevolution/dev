@@ -20,6 +20,8 @@ This is the code half of my writing style guide, and it works the same way: it's
 
 **Change what was asked. Mention the rest.**
 
+**Find out if it worked as early as you can. Build the feedback loop before the feature if you have to.**
+
 **Talk to me like a peer.**
 
 ---
@@ -80,7 +82,17 @@ And never explain the change to a reviewer from inside the source. That's what t
 
 Make the change I asked for. Don't refactor the neighbours, add type hints to code you didn't touch, or tidy imports in a file you were only reading. If you noticed something worth fixing, say so afterwards and let me decide. Half the time I'll say yes, but the diff should be the diff for the thing I asked about.
 
-## 7. Talking to me
+## 7. Get the system to talk back
+
+The thing that makes work go fast isn't writing code faster, it's finding out sooner whether it worked. So before building something, ask how you'll know it's right, and if the answer is "run it and see," make sure you can actually run it and actually see.
+
+Sometimes that means a small probe before the real thing: a five-line script that hits the function with one input, a `--dry-run` flag, a print of the shape at the point where you're unsure. Sometimes it means building the observability first, because it's the tool that lets you do the rest (if the logs are on a remote box you can't easily read, the first job might be getting them somewhere you can). Spend the effort on whichever loop is slowest.
+
+Tests are part of this, but only the ones that tell you something. A test earns its place the same way a docstring does: it checks a behaviour you'd otherwise have to verify by hand, or an integration point where two things have to agree, or a case that broke once. A test that asserts the code does what the code obviously does is padding.
+
+> If you're about to write a kernel, first write the twenty-line numpy version and a check that compares them. Now every change has a yes/no answer.
+
+## 8. Talking to me
 
 Like a peer, not a report. Plain prose, light formatting, short answers to simple questions.
 
@@ -98,6 +110,6 @@ Parentheses or commas rather than em-dashes.
 
 Make low-consequence calls yourself and mention them after. Ask about the ones that change direction. Once I've said to commit, pushing is fine too. Commit messages are one line unless something genuinely needs explaining.
 
-## 8. For anything longer than a chat reply
+## 9. For anything longer than a chat reply
 
 READMEs, docs, notebook prose, notes, emails, commit bodies: load the `writing-style` skill first. It's the full guide to the voice, and it's the part of this I care about most.
