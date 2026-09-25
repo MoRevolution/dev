@@ -14,7 +14,7 @@ alias l='ls -CF'
 alias copy='copy.exe'
 
 # fnm - must be initialized before use
-FNM_PATH="/home/morevolution/.local/share/fnm"
+FNM_PATH="$HOME/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
   export PATH="$FNM_PATH:$PATH"
   eval "`fnm env`"
@@ -78,3 +78,5 @@ _git_prompt_info() {
 }
 setopt PROMPT_SUBST
 PROMPT='%(?:%F{green}➜:%F{red}➜)%f %F{cyan}%c%f$(_git_prompt_info) '
+# Docker Desktop CLI (user install, no /usr/local/bin symlinks)
+export PATH="$HOME/.docker/bin:$PATH"
