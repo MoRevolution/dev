@@ -77,10 +77,14 @@ alt_tab = { brew = "alt-tab" }
 "files/opencode.nu" = { wsl = "~/.config/nushell/opencode.nu", macos = "~/Library/Application Support/nushell/opencode.nu" }
 
 # Agent instructions + skills (see files/agent/README.md)
-"files/agent/baseline.instructions.md" = { windows = "~/AppData/Roaming/Code/User/prompts/baseline.instructions.md", wsl = "~/.config/Code/User/prompts/baseline.instructions.md", macos = "~/Library/Application Support/Code/User/prompts/baseline.instructions.md" }
-"files/agent/python.instructions.md" = { windows = "~/AppData/Roaming/Code/User/prompts/python.instructions.md", wsl = "~/.config/Code/User/prompts/python.instructions.md", macos = "~/Library/Application Support/Code/User/prompts/python.instructions.md" }
-"files/agent/writing-style/SKILL.md" = "~/.copilot/skills/writing-style/SKILL.md"
-"files/agent/writing-style/references/writing_style.md" = "~/.copilot/skills/writing-style/references/writing_style.md"
+# The first destination is the one `collect` pulls back from.
+"files/agent/baseline.instructions.md" = [{ windows = "~/AppData/Roaming/Code/User/prompts/baseline.instructions.md", wsl = "~/.config/Code/User/prompts/baseline.instructions.md", macos = "~/Library/Application Support/Code/User/prompts/baseline.instructions.md" }, "~/.claude/baseline.instructions.md"]
+"files/agent/python.instructions.md" = [{ windows = "~/AppData/Roaming/Code/User/prompts/python.instructions.md", wsl = "~/.config/Code/User/prompts/python.instructions.md", macos = "~/Library/Application Support/Code/User/prompts/python.instructions.md" }, "~/.claude/python.instructions.md"]
+"files/agent/CLAUDE.md" = "~/.claude/CLAUDE.md"
+"files/agent/writing-style/SKILL.md" = ["~/.copilot/skills/writing-style/SKILL.md", "~/.claude/skills/writing-style/SKILL.md"]
+"files/agent/writing-style/references/writing_style.md" = ["~/.copilot/skills/writing-style/references/writing_style.md", "~/.claude/skills/writing-style/references/writing_style.md"]
+"files/agent/git-writing/SKILL.md" = ["~/.copilot/skills/git-writing/SKILL.md", "~/.claude/skills/git-writing/SKILL.md"]
+"files/agent/git-writing/references/pr_examples.md" = ["~/.copilot/skills/git-writing/references/pr_examples.md", "~/.claude/skills/git-writing/references/pr_examples.md"]
 
 # Windows-only configs
 "files/Wallpaper.jpg" = { windows = "~/Pictures/" }

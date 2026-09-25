@@ -17,6 +17,16 @@ def get-platform [] {
     }
 }
 
+# A destination is a path, a {platform: path} record, or a list of those.
+def resolve-dests [dest_data: any, platform: string] {
+    let entries = if (($dest_data | describe) =~ '^(list|table)') { $dest_data } else { [$dest_data] }
+    $entries | each {|d|
+        if ($d | describe | str starts-with "record") {
+            if ($platform in ($d | columns)) { $d | get $platform } else { null }
+        } else { $d }
+    } | compact
+}
+
 def is-unix [platform: string] { $platform in ["wsl", "macos", "linux"] }
 
 # =============================================================================
@@ -199,40 +209,35 @@ def "main files" [
 
     for entry in ($files | transpose source dest_data) {
         let source = $entry.source
-        let dest_data = $entry.dest_data
+        let dests = (resolve-dests $entry.dest_data $platform)
 
-        # Resolve destination for this platform
-        let dest = if ($dest_data | describe | str starts-with "record") {
-            if ($platform in ($dest_data | columns)) { $dest_data | get $platform } else { null }
-        } else {
-            $dest_data  # simple string = all platforms
-        }
-
-        if ($dest == null) {
+        if ($dests | is-empty) {
             $results = ($results | append { source: $source, dest: "-", action: "SKIP (no dest)" })
             continue
         }
 
-        if not ($source | path exists) {
-            $results = ($results | append { source: $source, dest: $dest, action: "FAIL (not found)" })
-            continue
-        }
+        for dest in $dests {
+            if not ($source | path exists) {
+                $results = ($results | append { source: $source, dest: $dest, action: "FAIL (not found)" })
+                continue
+            }
 
-        if $dry_run {
-            $results = ($results | append { source: $source, dest: $dest, action: "COPY" })
-        } else {
-            let result = try {
-                let dest_expanded = ($dest | path expand)
-                let dest_dir = if (($dest_expanded | str ends-with "/") or ($dest_expanded | str ends-with "\\")) {
-                    $dest_expanded
-                } else {
-                    $dest_expanded | path dirname
-                }
-                mkdir $dest_dir
-                cp $source $dest_expanded
-                "OK"
-            } catch {|e| $"FAIL: ($e.msg)" }
-            $results = ($results | append { source: $source, dest: $dest, action: $result })
+            if $dry_run {
+                $results = ($results | append { source: $source, dest: $dest, action: "COPY" })
+            } else {
+                let result = try {
+                    let dest_expanded = ($dest | path expand)
+                    let dest_dir = if (($dest_expanded | str ends-with "/") or ($dest_expanded | str ends-with "\\")) {
+                        $dest_expanded
+                    } else {
+                        $dest_expanded | path dirname
+                    }
+                    mkdir $dest_dir
+                    cp $source $dest_expanded
+                    "OK"
+                } catch {|e| $"FAIL: ($e.msg)" }
+                $results = ($results | append { source: $source, dest: $dest, action: $result })
+            }
         }
     }
 
@@ -252,12 +257,8 @@ def "main collect" [
     mut results = []
 
     for entry in ($cfg.files | transpose source dest_data) {
-        let dest_data = $entry.dest_data
-        let dest = if ($dest_data | describe | str starts-with "record") {
-            if ($platform in ($dest_data | columns)) { $dest_data | get $platform } else { null }
-        } else {
-            $dest_data
-        }
+        # With several destinations, the first one is the copy that gets edited.
+        let dest = (resolve-dests $entry.dest_data $platform | get -o 0)
 
         if ($dest == null) {
             $results = ($results | append { dest: "-", source: $entry.source, action: "SKIP (no dest)" })
