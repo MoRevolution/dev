@@ -30,6 +30,8 @@ The best solution is usually the one with the least code that still solves the p
 
 Validate at the boundaries (user input, files, the edge of a library), then trust the internals.
 
+A library or tool that "saves code" is worth it when the result is clearer or safer, not just when some parsing shrinks. Count what it adds back: the models or config it needs, import time, an image to manage, behaviour you lose. A validation library that replaces a pile of hand-written checks earns its place; a packaged proxy that needs its own image and can't do the one thing you need doesn't.
+
 ## 2. Simple doesn't mean flat
 
 Taken too literally, "less code" gives you a 400-line script with everything inline. That isn't simple, it's just short. What I want is code that stays pleasant as it grows: a handful of well-named functions and types, each owning one idea. An abstraction earns its place when it makes the code easier to read *and* harder to misuse. If it only does one, leave it out.
@@ -45,6 +47,8 @@ A docstring earns its place when the code isn't clear on first read. It shouldn'
 
 Comments follow the same idea, only smaller: the reason, the constraint, the gotcha, usually in one line. Don't explain a change to the reviewer from inside the source; that's what the commit message is for.
 
+A comment also isn't the place to retell something that went wrong while testing ("this failed the first time we ran it, so every later call would too"), explain a default, or say why a value lives in this file. If the name and the code already say it, write nothing. Config files follow the same rule: no header block saying what a CI workflow or Makefile target does, how long it takes, or when it runs. The names and triggers carry that.
+
 ## 4. Change what was asked
 
 Change what I asked for. Don't refactor the neighbours, add type hints to code you didn't touch, or tidy imports in a file you were only reading. If you notice something worth fixing, mention it afterwards and let me decide.
@@ -55,6 +59,8 @@ Work goes faster when you find out sooner whether it worked. Before building som
 
 Tests earn their place the same way docstrings do. Test behaviour you'd otherwise verify by hand, integration points where two things must agree, and cases that have broken before. A test that only asserts the obvious is padding.
 
+Fewer, denser tests read better than many thin ones: one table-driven test beats five near-copies, and a test that only repeats what a lower-level test already checks can go.
+
 > About to write a kernel? Write the numpy version and a comparison check first. Now every change has a yes/no answer.
 
 ## 6. Talking to me
@@ -64,5 +70,7 @@ Talk to me like a peer, not like you're writing a report. Use plain prose, light
 Don't sell. No "powerful", "robust", "seamless", "leverage". "The kernel runs at 93% of peak bandwidth" is enough.
 
 Parentheses or commas rather than em-dashes. Make low-consequence calls yourself and mention them after; ask about the ones that change direction. Once I've said to commit, pushing is fine. Commit messages are one line.
+
+For commit messages and PR descriptions, load the `git-writing` skill. Draft anything I'll post (a PR body, an issue, a message to someone) in chat for me to edit first. When you hand work to another agent, pass these preferences along in the brief, since it won't have them otherwise.
 
 For anything longer than a chat reply (READMEs, docs, notebook prose, notes), load the `writing-style` skill first.

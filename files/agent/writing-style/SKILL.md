@@ -26,6 +26,7 @@ Give the reader some orientation early, then say the interesting thing plainly. 
 - In research writing, say what was tried, what happened, and what it means. State negative results plainly.
 - In notebooks, use short explanations between cells and start with the smallest example that shows the idea.
 - No pitch writing, ever.
+- In READMEs and docs, say what a thing is before referring to it by name, keep the README short and link into the docs for the mechanism, and don't open every doc (or PR) the same way.
 
 ## Keeping it current
 
