@@ -118,7 +118,6 @@ alt_tab = { brew = "alt-tab" }
 [post_install.all]
 fnm_lts = "fnm install --lts"
 gh_auth = "gh auth login"
-plannotator_vscode = "code --install-extension backnotprop.plannotator-webview"
 plannotator_claude = "claude plugin marketplace add backnotprop/plannotator; claude plugin install plannotator@plannotator"
 
 [post_install.windows]
