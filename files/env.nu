@@ -26,6 +26,12 @@ if ($docker_bin | path exists) and ($docker_bin not-in $env.PATH) {
     $env.PATH = ($env.PATH | prepend $docker_bin)
 }
 
+# --- ~/.local/bin (uv tools, pdfpad) ---
+let local_bin = ($env.HOME | path join ".local" "bin")
+if ($local_bin | path exists) and ($local_bin not-in $env.PATH) {
+    $env.PATH = ($env.PATH | prepend $local_bin)
+}
+
 # --- fnm (Node version manager) ---
 # NB: `fnm env --json` does not include PATH (fnm 1.39+), so prepend this
 # shell's multishell bin explicitly — this mirrors what `eval "$(fnm env)"`

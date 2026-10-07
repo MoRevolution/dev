@@ -80,3 +80,5 @@ setopt PROMPT_SUBST
 PROMPT='%(?:%F{green}➜:%F{red}➜)%f %F{cyan}%c%f$(_git_prompt_info) '
 # Docker Desktop CLI (user install, no /usr/local/bin symlinks)
 export PATH="$HOME/.docker/bin:$PATH"
+# uv tools, pdfpad
+export PATH="$HOME/.local/bin:$PATH"

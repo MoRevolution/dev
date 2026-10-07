@@ -75,6 +75,7 @@ alt_tab = { brew = "alt-tab" }
 "files/env.nu" = { windows = "~/AppData/Roaming/nushell/env.nu", wsl = "~/.config/nushell/env.nu", macos = "~/Library/Application Support/nushell/env.nu" }
 "files/config.nu" = { windows = "~/AppData/Roaming/nushell/config.nu", wsl = "~/.config/nushell/config.nu", macos = "~/Library/Application Support/nushell/config.nu" }
 "files/opencode.nu" = { wsl = "~/.config/nushell/opencode.nu", macos = "~/Library/Application Support/nushell/opencode.nu" }
+"files/pdfpad.py" = { wsl = "~/.local/bin/pdfpad", macos = "~/.local/bin/pdfpad" }
 
 # Agent instructions + skills (see files/agent/README.md)
 # The first destination is the one `collect` pulls back from.
