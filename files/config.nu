@@ -41,7 +41,7 @@ alias ld = lazydocker
 # --- Custom commands ---
 
 # Create a directory and cd into it
-def mkcd [path: string] {
+def --env mkcd [path: string] {
     mkdir $path
     cd $path
 }
@@ -66,4 +66,41 @@ def ccr [file: string, ...args: string] {
     let out = ($file | str replace ".c" "")
     cc $file -o $out ...$args
     ^$"./($out)"
+}
+
+# Bare-repo worktrees: <repo>/.bare holds git, each branch gets a <repo>/<branch> folder.
+def gwt [] { help gwt }
+
+# Clone a repo bare, check out its default branch as the first worktree, and cd into it
+def --env "gwt clone" [url: string, dir?: string] {
+    let name = $url | str trim --right --char '/' | path basename | str replace -r '\.git$' ''
+    let root = $dir | default $name | path expand
+    git clone --bare $url ($root | path join .bare)
+    "gitdir: ./.bare\n" | save ($root | path join .git)
+    # Bare clones have no fetch refspec, so origin/* would never update.
+    git -C $root config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+    git -C $root fetch origin
+    let branch = git -C $root symbolic-ref --short HEAD | str trim
+    let dest = $root | path join ($branch | str replace -a '/' '-')
+    git -C $root worktree add $dest $branch
+    git -C $dest branch --quiet --set-upstream-to $"origin/($branch)"
+    cd $dest
+}
+
+# Add a worktree for a branch and cd into it. New branches start from origin's default branch (or --from).
+def --env "gwt add" [branch: string, --from (-f): string] {
+    let common = git rev-parse --path-format=absolute --git-common-dir | str trim
+    let dest = $common | path dirname | path join ($branch | str replace -a '/' '-')
+    git fetch origin
+    let has = {|ref| (^git show-ref --verify --quiet $ref | complete).exit_code == 0 }
+    let on_origin = do $has $"refs/remotes/origin/($branch)"
+    if $on_origin or (do $has $"refs/heads/($branch)") {
+        git worktree add $dest $branch
+        # Bare clones copy remote branches as plain local ones, without tracking.
+        if $on_origin { git -C $dest branch --quiet --set-upstream-to $"origin/($branch)" }
+    } else {
+        let base = $from | default (git --git-dir $common symbolic-ref --short HEAD | str trim)
+        git worktree add --no-track -b $branch $dest $"origin/($base)"
+    }
+    cd $dest
 }
