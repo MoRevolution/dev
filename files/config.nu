@@ -34,7 +34,7 @@ $env.config.cursor_shape = {
 }
 
 # --- Aliases ---
-alias cat = bat
+alias cat = bat --paging=never
 alias lg = lazygit
 alias ld = lazydocker
 

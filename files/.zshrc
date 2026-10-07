@@ -6,7 +6,7 @@ setopt HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE SHARE_HISTORY
 
 bindkey -e
 
-alias cat='bat'
+alias cat='bat --paging=never'
 alias ls='ls --color=auto'
 alias ll='ls -la'
 alias la='ls -A'
