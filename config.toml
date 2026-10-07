@@ -118,12 +118,16 @@ alt_tab = { brew = "alt-tab" }
 [post_install.all]
 fnm_lts = "fnm install --lts"
 gh_auth = "gh auth login"
+plannotator_vscode = "code --install-extension backnotprop.plannotator-webview"
+plannotator_claude = "claude plugin marketplace add backnotprop/plannotator; claude plugin install plannotator@plannotator"
 
 [post_install.windows]
+plannotator = 'powershell -Command "irm https://plannotator.ai/install.ps1 | iex"'
 ahk_startup = 'powershell -Command "$WshShell = New-Object -ComObject WScript.Shell; $shortcut = $WshShell.CreateShortcut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Media Keys.lnk\"); $shortcut.TargetPath = \"$env:USERPROFILE\\Documents\\AutoHotkey\\Media Keys.ahk\"; $shortcut.Save()"'
 
 [post_install.unix]
 default_shell = "chsh -s (which nu)"
+plannotator = "curl -fsSL https://plannotator.ai/install.sh | bash"
 
 [post_install.macos]
 wallpaper = 'let w = ($env.HOME | path join "Pictures/Wallpaper.jpg"); osascript -e $"tell application \"System Events\" to tell every desktop to set picture to POSIX file \"($w)\""'
