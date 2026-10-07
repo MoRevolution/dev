@@ -11,7 +11,12 @@ alias ls='ls --color=auto'
 alias ll='ls -la'
 alias la='ls -A'
 alias l='ls -CF'
-alias copy='copy.exe'
+
+if [[ -n "$WSL_DISTRO_NAME" ]]; then
+  alias copy='copy.exe'
+  # Share zoxide's database with the Windows side.
+  export _ZO_DATA_DIR=/mnt/c/Users/MoRevolution/.zoxide_wsl.db
+fi
 
 # fnm - must be initialized before use
 FNM_PATH="$HOME/.local/share/fnm"
@@ -23,7 +28,6 @@ fi
 
 # zoxide
 eval "$(zoxide init zsh)"
-export _ZO_DATA_DIR=/mnt/c/Users/MoRevolution/.zoxide_wsl.db
 
 # fzf - use init instead of --zsh if that option doesn't exist
 if command -v fzf >/dev/null 2>&1; then
