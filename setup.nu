@@ -9,7 +9,7 @@ def get-platform [] {
         "macos" => "macos"
         "linux" => {
             if ("/proc/version" | path exists) {
-                let ver = (open /proc/version | str downcase)
+                let ver = (open /proc/version | str lowercase)
                 if ($ver | str contains "microsoft") { "wsl" } else { "linux" }
             } else { "linux" }
         }
@@ -45,20 +45,24 @@ def get-manager [platform: string] {
     }
 }
 
-def pkg-is-installed [manager: string, id: string] {
+# Fetch the installed package list ONCE per run and reuse it for every package.
+# The old per-package `brew list` x2 made `packages`/`status` crawl with 25+
+# packages (50+ brew spawns). Winget returns one blob string (substring match,
+# same semantics as before); brew/apt return a lowercased id list.
+def get-installed-cache [manager: string] {
     match $manager {
-        "winget" => {
-            let list = (^winget list --disable-interactivity | str downcase)
-            $list | str contains ($id | str downcase)
-        }
-        "brew" => {
-            let installed = (^brew list --formula --full-name | lines) ++ (^brew list --cask --full-name | lines)
-            ($id | str downcase) in ($installed | each { str downcase })
-        }
-        "apt" => {
-            let installed = (^dpkg-query -W -f '${Package}\n' | lines | each { str trim })
-            ($id | str downcase) in ($installed | each { str downcase })
-        }
+        "winget" => { ^winget list --disable-interactivity | str lowercase }
+        # One call lists both formulae and casks, tap-qualified (--full-name).
+        "brew" => { ^brew list --full-name | lines | each { str lowercase } }
+        "apt" => { ^dpkg-query -W -f '${Package}\n' | lines | each { str trim | str lowercase } }
+    }
+}
+
+def pkg-is-installed [manager: string, id: string, cache?: any] {
+    let installed = if ($cache == null) { get-installed-cache $manager } else { $cache }
+    match $manager {
+        "winget" => { $installed | str contains ($id | str lowercase) }
+        _ => { ($id | str lowercase) in $installed }
     }
 }
 
@@ -155,6 +159,9 @@ def "main packages" [
         print $"(char cr)  (ansi dark_gray)brew cache updated     (ansi reset)"
     }
 
+    # One lookup for the whole run (see get-installed-cache).
+    let installed = (get-installed-cache $manager)
+
     mut installed_count = 0
     mut skipped_count = 0
     mut failed_count = 0
@@ -162,7 +169,7 @@ def "main packages" [
     for entry in $entries {
         let name_padded = ($entry.name | fill -w $pad -c ' ' -a l)
 
-        if (pkg-is-installed $manager $entry.id) {
+        if (pkg-is-installed $manager $entry.id $installed) {
             print $"  (ansi dark_gray)✓ ($name_padded) skip(ansi reset)"
             $skipped_count = $skipped_count + 1
             continue
@@ -486,11 +493,14 @@ def "main status" [
     mut installed_count = 0
     mut total = 0
 
+    # One lookup for the whole run (see get-installed-cache).
+    let installed = (get-installed-cache $manager)
+
     for entry in $entries {
         let name_padded = ($entry.name | fill -w $pad -c ' ' -a l)
         $total = $total + 1
 
-        if (pkg-is-installed $manager $entry.id) {
+        if (pkg-is-installed $manager $entry.id $installed) {
             print $"  (ansi green)✓(ansi reset) ($name_padded) (ansi dark_gray)installed(ansi reset)"
             $installed_count = $installed_count + 1
         } else {

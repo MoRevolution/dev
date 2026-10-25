@@ -23,6 +23,7 @@ bat = { windows = "sharkdp.bat", brew = "bat" }
 vscode = { windows = "Microsoft.VisualStudioCode", brew = "visual-studio-code" }
 jetbrains_mono_nerd_font = { brew = "font-jetbrains-mono-nerd-font" }
 opencode = { brew = "anomalyco/tap/opencode" }
+claude_code = { windows = "Anthropic.ClaudeCode", brew = "claude-code" }
 
 # GUI-only packages (Windows desktop / macOS with display)
 [packages.gui_only]
@@ -107,7 +108,7 @@ hex = { brew = "anomalyco/tap/hex", brew_cask = true }
 ]
 
 # Windows-only configs
-"files/Wallpaper.jpg" = { windows = "~/Pictures/" }
+"files/Wallpaper.jpg" = { windows = "~/Pictures/", macos = "~/Pictures/" }
 "files/Lockscreen.jpg" = { windows = "~/Pictures/" }
 "files/Media Keys.ahk" = { windows = "~/Documents/AutoHotkey/" }
 "files/.zshrc" = { wsl = "~/.zshrc", macos = "~/.zshrc" }
@@ -119,7 +120,7 @@ hex = { brew = "anomalyco/tap/hex", brew_cask = true }
 [post_install.all]
 fnm_lts = "fnm install --lts"
 gh_auth = "gh auth login"
-plannotator_claude = "claude plugin marketplace add backnotprop/plannotator; claude plugin install plannotator@plannotator"
+plannotator_claude = "if (which claude | is-not-empty) { claude plugin marketplace add backnotprop/plannotator; claude plugin install plannotator@plannotator } else { print 'claude CLI not found, skipping' }"
 
 [post_install.windows]
 plannotator = 'powershell -Command "irm https://plannotator.ai/install.ps1 | iex"'
@@ -132,7 +133,7 @@ plannotator = "curl -fsSL https://plannotator.ai/install.sh | bash"
 
 [post_install.macos]
 drop_code = "nu setup.nu drop-code"
-wallpaper = 'let w = ($env.HOME | path join "Pictures/Wallpaper.jpg"); osascript -e $"tell application \"System Events\" to tell every desktop to set picture to POSIX file \"($w)\""'
+wallpaper = 'if ("~/Pictures/Wallpaper.jpg" | path expand | path exists) { let w = ($env.HOME | path join "Pictures/Wallpaper.jpg"); osascript -e $"tell application \"System Events\" to tell every desktop to set picture to POSIX file \"($w)\"" } else { print "Wallpaper.jpg not found in ~/Pictures, skipping (run `files` step first)" }'
 
 # =============================================================================
 # System config (TODO)
