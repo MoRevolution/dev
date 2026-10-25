@@ -32,8 +32,8 @@ add `--dry-run` to preview without doing anything.
 everything lives in `config.toml` — edit it to swap in your own. mine are pretty basic right now and i'll probably keep adding to it.
 
 - **everywhere** — git, nushell, starship, uv, gh, fnm, fzf, fd, zoxide, ripgrep, etc.
-- **unix** — tmux, htop, neovim
-- **macos** — aerospace, ghostty
+- **unix** — TFormula, tmux, htop, neovim
+- **macos** — aerospace, ghostty, Hex, DropCode
 - **windows** — terminal, powertoys, autohotkey
 - **personal** (add `--personal` flag) — zotero, sioyek, etc., the stuff you wouldn't want on a work laptop
 

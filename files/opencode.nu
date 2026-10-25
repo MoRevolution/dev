@@ -175,3 +175,15 @@ export alias ocws = opencode-web start
 export alias ocwk = opencode-web stop
 export alias ocwr = opencode-web restart
 export alias ocwst = opencode-web status
+
+# Render LaTeX in interactive OpenCode sessions.
+# Keep non-interactive subcommands direct.
+# Requires tformula on PATH (npm i -g tformula; see ~/.local/bin symlinks for fnm).
+def --wrapped opencode [...args] {
+    let head = if ($args | is-empty) { "" } else { $args.0 }
+    if $head in ["run", "web", "serve", "attach", "export", "import", "session", "agent", "plugin", "plug", "mcp", "acp", "models", "auth", "providers", "stats", "upgrade", "uninstall", "completion", "debug", "db", "github", "pr"] {
+        ^opencode ...$args
+    } else {
+        ^tformula -- opencode ...$args
+    }
+}

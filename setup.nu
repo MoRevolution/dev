@@ -62,7 +62,7 @@ def pkg-is-installed [manager: string, id: string] {
     }
 }
 
-def pkg-install [manager: string, id: string, args?: string] {
+def pkg-install [manager: string, id: string, args?: string, --cask] {
     match $manager {
         "winget" => {
             if ($args | is-empty) {
@@ -71,7 +71,9 @@ def pkg-install [manager: string, id: string, args?: string] {
                 ^winget install $id --accept-source-agreements --accept-package-agreements --source winget --silent $args | complete
             }
         }
-        "brew" => { ^brew install $id | complete }
+        "brew" => {
+            if $cask { ^brew install --cask $id | complete } else { ^brew install $id | complete }
+        }
         "apt" => { ^sudo apt install -y $id | complete }
     }
 }
@@ -175,7 +177,11 @@ def "main packages" [
         # Show installing indicator, then overwrite with result
         print $"  (ansi dark_gray)◌ ($name_padded) installing...(ansi reset)" --no-newline
         let args = if ("windows_args" in ($entry.pkg | columns)) { $entry.pkg.windows_args } else { null }
-        let result = (pkg-install $manager $entry.id $args)
+        let result = if ($entry.pkg | get -o brew_cask | default false) {
+            pkg-install $manager $entry.id $args --cask
+        } else {
+            pkg-install $manager $entry.id $args
+        }
         let ok = ($result.exit_code == 0)
 
         if $ok {
@@ -192,6 +198,80 @@ def "main packages" [
     }
 
     print $"\n  (ansi green)($installed_count) installed(ansi reset) · ($skipped_count) skip · (ansi red)($failed_count) failed(ansi reset)"
+}
+
+# Build and install the customized DropCode fork on macOS.
+def "main drop-code" [
+    --dry-run (-n)
+] {
+    if ((get-platform) != "macos") {
+        error make { msg: "DropCode can only be installed on macOS." }
+    }
+
+    let repo = ($env.HOME | path join "projects/tools/drop-code")
+    let repo_url = "https://github.com/MoRevolution/drop-code.git"
+    let branch = "feat/workspace-links-auto-hide"
+    let app_dir = ($env.HOME | path join "Applications")
+    let app_path = ($app_dir | path join "DropCode.app")
+
+    if $dry_run {
+        print $"Would clone/update ($repo_url) at ($repo), build the ($branch) branch, and install to ($app_path)."
+        return
+    }
+
+    if not ($repo | path exists) {
+        mkdir ($repo | path dirname)
+        let clone = (^git clone --branch $branch --single-branch $repo_url $repo | complete)
+        if $clone.exit_code != 0 {
+            error make { msg: $"Could not clone DropCode: ($clone.stderr | str trim)" }
+        }
+    } else {
+        let status = (^git -C $repo status --porcelain | complete)
+        if $status.exit_code != 0 {
+            error make { msg: $"Could not inspect DropCode at ($repo): ($status.stderr | str trim)" }
+        }
+        if not ($status.stdout | str trim | is-empty) {
+            error make { msg: $"DropCode has local changes at ($repo); commit or stash them before setup updates it." }
+        }
+
+        let fetch = (^git -C $repo fetch $repo_url $branch | complete)
+        if $fetch.exit_code != 0 {
+            error make { msg: $"Could not fetch DropCode: ($fetch.stderr | str trim)" }
+        }
+
+        let branches = (^git -C $repo branch --list $branch | complete)
+        if $branches.exit_code != 0 {
+            error make { msg: $"Could not inspect DropCode branches: ($branches.stderr | str trim)" }
+        }
+        if ($branches.stdout | str trim | is-empty) {
+            let switch = (^git -C $repo switch --create $branch FETCH_HEAD | complete)
+            if $switch.exit_code != 0 {
+                error make { msg: $"Could not switch to DropCode branch ($branch): ($switch.stderr | str trim)" }
+            }
+        } else {
+            let switch = (^git -C $repo switch $branch | complete)
+            if $switch.exit_code != 0 {
+                error make { msg: $"Could not switch to DropCode branch ($branch): ($switch.stderr | str trim)" }
+            }
+            let update = (^git -C $repo merge --ff-only FETCH_HEAD | complete)
+            if $update.exit_code != 0 {
+                error make { msg: $"Could not fast-forward DropCode branch ($branch): ($update.stderr | str trim)" }
+            }
+        }
+    }
+
+    let build_script = ($repo | path join "scripts/build-app.sh")
+    let build = (^sh $build_script | complete)
+    if $build.exit_code != 0 {
+        error make { msg: $"DropCode build failed: ($build.stderr | str trim)" }
+    }
+
+    mkdir $app_dir
+    let install = (^ditto ($repo | path join ".build/DropCode.app") $app_path | complete)
+    if $install.exit_code != 0 {
+        error make { msg: $"Could not install DropCode: ($install.stderr | str trim)" }
+    }
+    print $"DropCode installed at ($app_path)"
 }
 
 # Copy configuration files

@@ -86,3 +86,13 @@ PROMPT='%(?:%F{green}➜:%F{red}➜)%f %F{cyan}%c%f$(_git_prompt_info) '
 export PATH="$HOME/.docker/bin:$PATH"
 # uv tools, pdfpad
 export PATH="$HOME/.local/bin:$PATH"
+
+# Auto-wrap interactive opencode TUI with TFormula for LaTeX rendering.
+# Non-interactive subcommands (run, web, serve, ...) call opencode directly.
+opencode() {
+  case "$1" in
+    run|web|serve|attach|export|import|session|agent|plugin|plug|mcp|acp|models|auth|providers|stats|upgrade|uninstall|completion|debug|db|github|pr)
+      command opencode "$@";;
+    *) tformula -- opencode "$@";;
+  esac
+}

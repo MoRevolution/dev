@@ -59,6 +59,7 @@ build_essential = { brew = "gcc" }
 aerospace = { brew = "nikitabobko/tap/aerospace" }
 ghostty = { brew = "ghostty" }
 alt_tab = { brew = "alt-tab" }
+hex = { brew = "anomalyco/tap/hex", brew_cask = true }
 
 # =============================================================================
 # Configuration files
@@ -125,10 +126,12 @@ plannotator = 'powershell -Command "irm https://plannotator.ai/install.ps1 | iex
 ahk_startup = 'powershell -Command "$WshShell = New-Object -ComObject WScript.Shell; $shortcut = $WshShell.CreateShortcut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Media Keys.lnk\"); $shortcut.TargetPath = \"$env:USERPROFILE\\Documents\\AutoHotkey\\Media Keys.ahk\"; $shortcut.Save()"'
 
 [post_install.unix]
+tformula = "npm install -g tformula --allow-scripts=node-pty --allow-scripts=sharp"
 default_shell = "chsh -s (which nu)"
 plannotator = "curl -fsSL https://plannotator.ai/install.sh | bash"
 
 [post_install.macos]
+drop_code = "nu setup.nu drop-code"
 wallpaper = 'let w = ($env.HOME | path join "Pictures/Wallpaper.jpg"); osascript -e $"tell application \"System Events\" to tell every desktop to set picture to POSIX file \"($w)\""'
 
 # =============================================================================
