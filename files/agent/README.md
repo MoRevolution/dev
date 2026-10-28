@@ -6,6 +6,7 @@ These files capture how I like agents to write code and prose. They are delibera
 - `python.instructions.md` holds Python defaults and only needs to load for `.py` files.
 - `writing-style/` wraps the full guide to my writing voice. The guide under `references/` is the canonical copy.
 - `git-writing/` covers commit messages and PR descriptions, with PR bodies I wrote or approved under `references/`.
+- `entire/` covers local Entire CLI session checkpoints, `entire why`, and token diagnostics, with evaluation notes under `references/`.
 - `CLAUDE.md` is Claude Code's entry point; it imports the baseline and the Python defaults.
 
 After editing a live copy, run `nu setup.nu collect` to pull it back here.

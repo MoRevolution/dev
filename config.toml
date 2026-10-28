@@ -24,6 +24,7 @@ vscode = { windows = "Microsoft.VisualStudioCode", brew = "visual-studio-code" }
 jetbrains_mono_nerd_font = { brew = "font-jetbrains-mono-nerd-font" }
 opencode = { brew = "anomalyco/tap/opencode" }
 claude_code = { windows = "Anthropic.ClaudeCode", brew = "claude-code" }
+entire = { brew = "entireio/tap/entire", brew_cask = true }
 
 # GUI-only packages (Windows desktop / macOS with display)
 [packages.gui_only]
@@ -106,6 +107,14 @@ hex = { brew = "anomalyco/tap/hex", brew_cask = true }
   "~/.copilot/skills/git-writing/references/pr_examples.md",
   "~/.claude/skills/git-writing/references/pr_examples.md",
 ]
+"files/agent/entire/SKILL.md" = [
+  "~/.copilot/skills/entire/SKILL.md",
+  "~/.claude/skills/entire/SKILL.md",
+]
+"files/agent/entire/references/notes.md" = [
+  "~/.copilot/skills/entire/references/notes.md",
+  "~/.claude/skills/entire/references/notes.md",
+]
 
 # Windows-only configs
 "files/Wallpaper.jpg" = { windows = "~/Pictures/", macos = "~/Pictures/" }
@@ -124,6 +133,7 @@ plannotator_claude = "if (which claude | is-not-empty) { claude plugin marketpla
 
 [post_install.windows]
 plannotator = 'powershell -Command "irm https://plannotator.ai/install.ps1 | iex"'
+entire = 'powershell -Command "irm https://entire.com/install.ps1 | iex"'
 ahk_startup = 'powershell -Command "$WshShell = New-Object -ComObject WScript.Shell; $shortcut = $WshShell.CreateShortcut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Media Keys.lnk\"); $shortcut.TargetPath = \"$env:USERPROFILE\\Documents\\AutoHotkey\\Media Keys.ahk\"; $shortcut.Save()"'
 
 [post_install.unix]

@@ -104,3 +104,18 @@ def --env "gwt add" [branch: string, --from (-f): string] {
     }
     cd $dest
 }
+
+# Enable Entire in the current repo for local-only session capture (never pushed, hidden from git status)
+def entire-local [] {
+    let common = (git rev-parse --path-format=absolute --git-common-dir | str trim)
+    ^entire enable -y --local --skip-push-sessions --telemetry=false --agent claude-code
+    ^entire agent add opencode
+    let exclude = ($common | path join "info/exclude")
+    mkdir ($exclude | path dirname)
+    let current = if ($exclude | path exists) { open $exclude } else { "" }
+    let patterns = [".entire/", ".claude/settings.json", ".opencode/plugins/entire.ts"]
+    let missing = ($patterns | where {|p| not ($current | lines | any {|l| ($l | str trim) == $p }) })
+    if ($missing | is-not-empty) {
+        (["", "# Entire local-only setup", ...$missing, ""] | str join "\n") | save --append $exclude
+    }
+}
